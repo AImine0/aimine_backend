@@ -15,8 +15,6 @@ import java.util.List;
 @Repository
 public interface AiServiceRepository extends JpaRepository<AiService, Long> {
 
-    // 카테고리별 조회
-    Page<AiService> findByCategory(Category category, Pageable pageable);
 
     long countByCategory(Category category);
 
@@ -49,6 +47,40 @@ public interface AiServiceRepository extends JpaRepository<AiService, Long> {
             @Param("name") String name,
             @Param("category") Category category,
             @Param("pricingType") AiService.PricingType pricingType,
+            Pageable pageable
+    );
+
+
+    // 검색을 위한 추가 메소드들
+    Page<AiService> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    Page<AiService> findByCategoryDisplayName(String categoryDisplayName, Pageable pageable);
+
+    // 카테고리별 조회
+    Page<AiService> findByCategory(Category category, Pageable pageable);
+
+    Page<AiService> findByCategoryDisplayNameAndPricingType(
+            String categoryDisplayName,
+            AiService.PricingType pricingType,
+            Pageable pageable
+    );
+
+    Page<AiService> findByNameContainingIgnoreCaseAndCategoryDisplayName(
+            String name,
+            String categoryDisplayName,
+            Pageable pageable
+    );
+
+    Page<AiService> findByNameContainingIgnoreCaseAndPricingType(
+            String name,
+            AiService.PricingType pricingType,
+            Pageable pageable
+    );
+
+    Page<AiService> findByNameContainingIgnoreCaseAndCategoryDisplayNameAndPricingType(
+            String name,
+            String categoryDisplayName,
+            AiService.PricingType pricingType,
             Pageable pageable
     );
 }
