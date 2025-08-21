@@ -40,6 +40,14 @@ dependencies {
     // Swagger/OpenAPI (Java 21 호환)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
+    // HikariCP 메트릭 관련 의존성 추가
+    implementation 'io.micrometer:micrometer-core'
+    implementation 'io.dropwizard.metrics:metrics-core'
+    implementation 'io.dropwizard.metrics:metrics-healthchecks'
+
+    // 환경변수 파일 로드용
+    implementation 'me.paulschwarz:spring-dotenv:2.5.4'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

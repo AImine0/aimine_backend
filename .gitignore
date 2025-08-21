@@ -1,48 +1,208 @@
+# ==================================================
+# AIMine Backend .gitignore
+# ==================================================
+
+# ===== macOS 시스템 파일 =====
 .DS_Store
-.DS_Store
-build/reports/problems/problems-report.html
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===== Build 관련 파일 =====
+build/
+build/**
+build/**/*
+**/build/
+**/build/**
+out/
+target/
+bin/
+
+# Build 결과물 및 리포트
+build/reports/
+build/test-results/
+build/tmp/
+build/classes/
+build/resources/
+build/libs/
+build/distributions/
+build/generated/
+
+# Gradle 생성 파일들
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ===== Gradle 관련 파일  =====
+.gradle/
+.gradle/**
+.gradle/**/*
+**/.gradle/
+/.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradle/wrapper/gradle-wrapper.jar
+
+# Gradle 버전별 캐시
+.gradle/*/
+.gradle/*/fileHashes/
+.gradle/*/executionHistory/
+.gradle/*/checksums/
+.gradle/*/fileChanges/
+.gradle/buildOutputCleanup/
+.gradle/vcs-*/
+
+# 특정 Gradle 버전 파일들
+.gradle/8.*/
+.gradle/7.*/
+.gradle/6.*/
+.gradle/8.14.3/
+.gradle/vcs-1/
+.gradle/file-system.probe
+.gradle/buildOutputCleanup/outputFiles.bin
+.gradle/buildOutputCleanup/buildOutputCleanup.lock
+
+# ===== IDE 관련 파일 (완전 차단) =====
+# IntelliJ IDEA - 모든 하위 파일/폴더 무시
+.idea/
+.idea/**/*
+.idea/*
+**/.idea/
+**/.idea/**
+*.iws
+*.iml
+*.ipr
+
+# IntelliJ 캐시 및 설정 파일
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries/
+.idea/shelf/
 .idea/modules.xml
 .idea/misc.xml
 .idea/gradle.xml
 .idea/compiler.xml
 .idea/.name
-/.gradle/*
-.gradle/vcs-1/gc.properties
-.gradle/file-system.probe
-.gradle/buildOutputCleanup/outputFiles.bin
-.gradle/buildOutputCleanup/buildOutputCleanup.lock
-.gradle/8.14.3/gc.properties
-.gradle/8.14.3/fileHashes/fileHashes.lock
-.gradle/8.14.3/fileHashes/fileHashes.bin
-.gradle/8.14.3/fileChanges/last-build.bin
-.gradle/8.14.3/executionHistory/executionHistory.lock
-.gradle/8.14.3/executionHistory/executionHistory.bin
-.gradle/8.14.3/checksums/sha1-checksums.bin
-.gradle/8.14.3/checksums/md5-checksums.bin
-.gradle/8.14.3/checksums/checksums.lock
-build/reports/problems/problems-report.html
-.idea/modules.xml
-.idea/misc.xml
-.gradle/file-system.probe
-.gradle/buildOutputCleanup/outputFiles.bin
-.gradle/buildOutputCleanup/buildOutputCleanup.lock
-.gradle/8.14.3/fileHashes/fileHashes.lock
-.gradle/8.14.3/fileHashes/fileHashes.bin
-.gradle/8.14.3/executionHistory/executionHistory.lock
-.gradle/8.14.3/executionHistory/executionHistory.bin
-.gradle/8.14.3/checksums/checksums.lock
-.gradle/8.14.3/checksums/checksums.lock
-.gradle/8.14.3/executionHistory/executionHistory.bin
-.gradle/8.14.3/executionHistory/executionHistory.lock
-.gradle/8.14.3/fileHashes/fileHashes.bin
-.gradle/8.14.3/fileHashes/fileHashes.lock
-.gradle/buildOutputCleanup/buildOutputCleanup.lock
-.gradle/buildOutputCleanup/outputFiles.bin
-.gradle/file-system.probe
-.idea/misc.xml
-.idea/modules.xml
-build/reports/problems/problems-report.html
-/.gradle
-/.gradle/8.14.3
-/.gradle/8.14.3/checksums
-build/reports/problems/problems-report.html
+.idea/jarRepositories.xml
+.idea/libraries/
+.idea/inspectionProfiles/
+.idea/codeStyles/
+.idea/runConfigurations/
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# Eclipse
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+.metadata
+.factorypath
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ===== Java 관련 =====
+*.class
+*.log
+*.ctxt
+.mtj.tmp/
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# ===== Spring Boot 관련 =====
+spring-boot-devtools.properties
+application-*.properties
+!application.properties
+!application-local.properties
+!application-test.properties
+
+# ===== 로그 파일 =====
+logs/
+*.log
+log/
+*.log.*
+
+# ===== 테스트 관련 =====
+/test-output/
+testng-reports/
+.testmondata
+
+# ===== 데이터베이스 =====
+*.db
+*.sqlite
+*.sqlite3
+/data/
+/db/
+
+# ===== 임시 파일 =====
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ===== Node.js (프론트엔드 관련시) =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ===== Docker =====
+Dockerfile.prod
+docker-compose.override.yml
+.dockerignore
+
+# ===== 기타 =====
+*.pid
+*.seed
+*.pid.lock
+.nyc_output
+.coverage
+*.lcov
+.cache
+.parcel-cache
+
+# ===== 운영 관련 =====
+/deploy/
+/scripts/deploy/
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+# ===== Backup 파일 =====
+*.bak
+*.backup
+*.old
+*.orig
+
+# ===== Gradle Wrapper (필요한 파일들은 제외) =====
+!gradle/wrapper/gradle-wrapper.properties
+
+# ===== 개발자 개인 설정 =====
+.vimrc
+.bashrc
+.profile
