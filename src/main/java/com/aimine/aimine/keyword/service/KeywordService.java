@@ -36,9 +36,16 @@ public class KeywordService {
 
         List<Keyword> keywords = keywordRepository.findAllOrderByName();
 
-        // 각 키워드별 AI 서비스 개수 조회
+        // 각 키워드별 AI 서비스 개수 조회 - Repository 메서드 직접 사용
         List<Long> toolCounts = keywords.stream()
-                .map(aiServiceKeywordRepository::countAiServicesByKeyword)
+                .map(keyword -> {
+                    try {
+                        return aiServiceKeywordRepository.countAiServicesByKeyword(keyword);
+                    } catch (Exception e) {
+                        log.warn("키워드 {}의 AI 서비스 개수 조회 실패: {}", keyword.getName(), e.getMessage());
+                        return 0L;
+                    }
+                })
                 .collect(Collectors.toList());
 
         return KeywordListResponse.from(keywords, toolCounts);
@@ -62,7 +69,14 @@ public class KeywordService {
 
         // 각 키워드별 AI 서비스 개수 조회
         List<Long> toolCounts = keywords.stream()
-                .map(aiServiceKeywordRepository::countAiServicesByKeyword)
+                .map(keyword -> {
+                    try {
+                        return aiServiceKeywordRepository.countAiServicesByKeyword(keyword);
+                    } catch (Exception e) {
+                        log.warn("키워드 {}의 AI 서비스 개수 조회 실패: {}", keyword.getName(), e.getMessage());
+                        return 0L;
+                    }
+                })
                 .collect(Collectors.toList());
 
         return KeywordByTypeResponse.from(keywords, toolCounts);
@@ -83,7 +97,14 @@ public class KeywordService {
 
         // 각 AI 서비스별 북마크 개수 조회
         List<Long> bookmarkCounts = aiServices.stream()
-                .map(bookmarkRepository::countByAiService)
+                .map(service -> {
+                    try {
+                        return bookmarkRepository.countByAiService(service);
+                    } catch (Exception e) {
+                        log.warn("AI 서비스 {}의 북마크 개수 조회 실패: {}", service.getName(), e.getMessage());
+                        return 0L;
+                    }
+                })
                 .collect(Collectors.toList());
 
         return KeywordServiceListResponse.from(keyword, aiServices, bookmarkCounts);
