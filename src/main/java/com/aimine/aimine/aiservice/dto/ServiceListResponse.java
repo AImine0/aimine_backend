@@ -57,16 +57,16 @@ public class ServiceListResponse {
                     return ServiceData.builder()
                             .id(service.getId())
                             .serviceName(service.getName())
-                            .description("AI 서비스 설명") // 임시 설명
+                            .description(service.getDescription() != null ? service.getDescription() : "AI 서비스 설명")
                             .websiteUrl(service.getOfficialUrl())
-                            .logoUrl("https://logo-url.com/" + service.getName().toLowerCase() + ".png") // 임시 로고
+                            .logoUrl("https://logo-url.com/" + service.getName().toLowerCase() + ".png")
                             .launchDate(service.getReleaseDate())
                             .category(CategoryInfo.builder()
                                     .id(service.getCategory().getId())
                                     .name(service.getCategory().getDisplayName())
                                     .build())
-                            .tag(service.getTags() != null && service.getTags().length > 0 ?
-                                    service.getTags()[0] : "AI 서비스") // 첫 번째 태그 또는 기본값
+                            .tag(service.getTags() != null && !service.getTags().trim().isEmpty() ?
+                                    service.getTags().split(",")[0].trim() : "AI 서비스") // 첫 번째 태그 또는 기본값
                             .pricingType(service.getPricingType().name())
                             .overallRating(service.getAverageRating())
                             .keywords(keywords)

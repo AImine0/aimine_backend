@@ -72,8 +72,9 @@ public class AiCombinationDetailResponse {
 
     // 서비스별 태그 설정 (임시)
     private static String getTagByService(AiService service) {
-        if (service.getTags() != null && service.getTags().length > 0) {
-            return service.getTags()[0];
+        // tags가 String이므로 String으로 처리
+        if (service.getTags() != null && !service.getTags().trim().isEmpty()) {
+            return service.getTags().split(",")[0].trim(); // 첫 번째 태그
         }
 
         String categoryName = service.getCategory().getDisplayName();

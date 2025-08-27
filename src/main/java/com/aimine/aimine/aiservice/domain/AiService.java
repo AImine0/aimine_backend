@@ -22,44 +22,54 @@ public class AiService {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, length = 200, unique = true)
     private String name;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "image_path", columnDefinition = "TEXT")
+    private String imagePath;
+
+    @Column(columnDefinition = "TEXT")
+    private String tags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "official_url", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "official_url", columnDefinition = "TEXT")
     private String officialUrl;
 
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "pricing_type", length = 20)
+    @Column(name = "pricing_type", length = 20, nullable = false)
     @Builder.Default
     private PricingType pricingType = PricingType.UNKNOWN;
 
     @Column(name = "pricing_image_path", length = 500)
     private String pricingImagePath;
 
-    @Column(columnDefinition = "TEXT[]")
-    private String[] tags;
-
-    @Column(name = "average_rating", precision = 3, scale = 2)
+    @Column(name = "average_rating", precision = 3, scale = 2, nullable = false)
     @Builder.Default
     private BigDecimal averageRating = BigDecimal.ZERO;
 
-    @Column(name = "total_reviews")
-    @Builder.Default
-    private Integer totalReviews = 0;
-
     @Column(name = "recommendation_score", precision = 3, scale = 2)
-    @Builder.Default
-    private BigDecimal recommendationScore = BigDecimal.ZERO;
+    private BigDecimal recommendationScore;
+
+    @Column(name = "service_image_path", columnDefinition = "TEXT")
+    private String serviceImagePath;
+
+    @Column(name = "search_logo_path", columnDefinition = "TEXT")
+    private String searchLogoPath;
 
     @Column(name = "recommendation_rank")
     private Integer recommendationRank;
+
+    @Column(name = "total_reviews")
+    private Integer totalReviews;
 
     public enum PricingType {
         FREE,       // 무료
