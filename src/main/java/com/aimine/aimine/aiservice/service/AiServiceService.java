@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,75 +39,70 @@ public class AiServiceService {
     private final ReviewRepository reviewRepository;
 
     /**
-     * AI 서비스 목록 조회 (페이징, 필터링, 정렬 지원)
+     * AI 서비스 목록 조회 (페이징, 필터링, 정렬) - N+1 문제 해결
      */
     public ServiceListResponse getAiServices(
             int page,
             int size,
-            String categoryName,
+            String category,
             String search,
             String sort,
-            String pricing
-    ) {
-        log.debug("AI 서비스 목록 조회: page={}, size={}, category={}, search={}, sort={}, pricing={}",
-                page, size, categoryName, search, sort, pricing);
+            String pricing) {
 
-        // 페이징 및 정렬 처리
+        log.debug("AI 서비스 목록 조회: page={}, size={}, category={}, search={}, sort={}, pricing={}",
+                page, size, category, search, sort, pricing);
+
+        // 페이지 크기 제한 (성능상 최대 50개)
+        size = Math.min(size, 50);
+
+        // 정렬 조건 생성
         Pageable pageable = createPageable(page, size, sort);
 
-        // 카테고리 필터링
-        Category category = null;
-        if (categoryName != null && !categoryName.trim().isEmpty()) {
-            category = categoryRepository.findByName(categoryName).orElse(null);
-        }
-
-        // 가격 타입 필터링
-        AiService.PricingType pricingType = null;
-        if (pricing != null && !pricing.trim().isEmpty()) {
-            try {
-                pricingType = AiService.PricingType.valueOf(pricing.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new BusinessException(AiServiceErrorCode.INVALID_FILTER_PARAMETER,
-                        "유효하지 않은 가격 타입: " + pricing);
-            }
-        }
-
-        // 조건에 따른 조회
+        // 🔥 N+1 해결: 카테고리 정보를 포함하여 조회
         Page<AiService> aiServicesPage;
-        if (search != null && !search.trim().isEmpty()) {
-            // 검색어가 있는 경우
-            aiServicesPage = aiServiceRepository.findByNameContaining(search, pageable);
-        } else if (category != null || pricingType != null) {
-            // 필터링이 있는 경우
-            aiServicesPage = aiServiceRepository.findBySearchCriteria(search, category, pricingType, pageable);
+
+        // 카테고리 조회가 있는 경우
+        if (category != null && !category.trim().isEmpty()) {
+            Category categoryEntity = categoryRepository.findByName(category)
+                    .orElse(null);
+
+            if (categoryEntity != null) {
+                // 카테고리별 조회 시 카테고리 정보 포함
+                aiServicesPage = aiServiceRepository.findByCategoryWithDetails(categoryEntity, pageable);
+            } else {
+                // 카테고리가 존재하지 않으면 빈 결과
+                aiServicesPage = Page.empty(pageable);
+            }
         } else {
-            // 기본 조회
-            aiServicesPage = aiServiceRepository.findAll(pageable);
+            // 🔥 전체 조회 시 카테고리 정보 포함
+            aiServicesPage = aiServiceRepository.findAllWithCategory(pageable);
         }
 
         List<AiService> aiServices = aiServicesPage.getContent();
 
-        // 각 AI 서비스별 키워드 조회
+        // 🔥 배치로 키워드 조회하여 N+1 문제 해결
+        List<Long> serviceIds = aiServices.stream()
+                .map(AiService::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, List<String>> keywordsMap = getKeywordsBatch(serviceIds);
+
+        // 각 서비스에 해당하는 키워드 매핑
         List<List<String>> keywordsList = aiServices.stream()
-                .map(service -> {
-                    List<Keyword> keywords = aiServiceKeywordRepository.findKeywordsByAiService(service);
-                    return keywords.stream()
-                            .map(Keyword::getName)
-                            .collect(Collectors.toList());
-                })
+                .map(service -> keywordsMap.getOrDefault(service.getId(), List.of()))
                 .collect(Collectors.toList());
 
         return ServiceListResponse.from(aiServices, keywordsList);
     }
 
     /**
-     * AI 서비스 상세 조회
+     * AI 서비스 상세 조회 - N+1 문제 해결
      */
     public ServiceDetailResponse getAiServiceDetail(Long serviceId) {
         log.debug("AI 서비스 상세 조회: serviceId={}", serviceId);
 
-        // AI 서비스 조회
-        AiService aiService = aiServiceRepository.findById(serviceId)
+        // 🔥 카테고리 정보 포함하여 조회
+        AiService aiService = aiServiceRepository.findByIdWithCategory(serviceId)
                 .orElseThrow(() -> new BusinessException(AiServiceErrorCode.AI_SERVICE_NOT_FOUND));
 
         // 키워드 조회
@@ -120,55 +116,53 @@ public class AiServiceService {
         return ServiceDetailResponse.from(aiService, keywords, reviews);
     }
 
+    // ==================== 유틸리티 메소드들 ====================
+
     /**
-     * 페이징 및 정렬 조건 생성
+     * 배치로 키워드 조회 (N+1 문제 해결)
      */
-    private Pageable createPageable(int page, int size, String sortParam) {
-        // 기본값 설정
-        if (page < 0) page = 0;
-        if (size <= 0 || size > 100) size = 20;
+    private Map<Long, List<String>> getKeywordsBatch(List<Long> serviceIds) {
+        if (serviceIds.isEmpty()) {
+            return Map.of();
+        }
 
-        // 정렬 처리
-        Sort sort = createSort(sortParam);
+        // 모든 서비스의 키워드를 한 번의 쿼리로 조회
+        List<Object[]> keywordData = aiServiceKeywordRepository.findKeywordsByServiceIds(serviceIds);
 
-        return PageRequest.of(page, size, sort);
+        return keywordData.stream()
+                .collect(Collectors.groupingBy(
+                        data -> (Long) data[0], // service_id
+                        Collectors.mapping(
+                                data -> ((Keyword) data[1]).getName(), // keyword name
+                                Collectors.toList()
+                        )
+                ));
+    }
+
+    /**
+     * 페이지블 객체 생성
+     */
+    private Pageable createPageable(int page, int size, String sort) {
+        Sort sortOrder = createSortOrder(sort);
+        return PageRequest.of(page, size, sortOrder);
     }
 
     /**
      * 정렬 조건 생성
      */
-    private Sort createSort(String sortParam) {
-        if (sortParam == null || sortParam.trim().isEmpty()) {
-            // 기본 정렬: 평점 내림차순
-            return Sort.by(Sort.Direction.DESC, "averageRating");
-        }
+    private Sort createSortOrder(String sort) {
+        if (sort == null) sort = "recommendation";
 
-        try {
-            SortedBy sortedBy = SortedBy.fromString(sortParam);
-
-            switch (sortedBy) {
-                case RATING:
-                    return Sort.by(Sort.Direction.DESC, "averageRating");
-                case LATEST:
-                    return Sort.by(Sort.Direction.DESC, "releaseDate");
-                case NAME:
-                    return Sort.by(Sort.Direction.ASC, "name");
-                case RECOMMENDATION:
-                    return Sort.by(Sort.Direction.ASC, "recommendationRank");
-                default:
-                    return Sort.by(Sort.Direction.DESC, "averageRating");
-            }
-        } catch (Exception e) {
-            log.warn("Invalid sort parameter: {}, using default sort", sortParam);
-            return Sort.by(Sort.Direction.DESC, "averageRating");
-        }
+        return switch (sort.toLowerCase()) {
+            case "rating" -> Sort.by("averageRating").descending()
+                    .and(Sort.by("totalReviews").descending());
+            case "latest" -> Sort.by("releaseDate").descending();
+            case "name" -> Sort.by("name").ascending();
+            case "recommendation" -> Sort.by("recommendationRank").ascending()
+                    .and(Sort.by("averageRating").descending());
+            default -> Sort.by("recommendationRank").ascending();
+        };
     }
 
-    /**
-     * AI 서비스 ID로 조회
-     */
-    public AiService findById(Long serviceId) {
-        return aiServiceRepository.findById(serviceId)
-                .orElseThrow(() -> new BusinessException(AiServiceErrorCode.AI_SERVICE_NOT_FOUND));
-    }
+
 }
