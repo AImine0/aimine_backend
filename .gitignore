@@ -13,10 +13,7 @@ Thumbs.db
 
 # ===== Build 관련 파일 =====
 build/
-build/**
-build/**/*
 **/build/
-**/build/**
 out/
 target/
 bin/
@@ -27,7 +24,6 @@ build/test-results/
 build/tmp/
 build/classes/
 build/resources/
-build/libs/
 build/distributions/
 build/generated/
 
