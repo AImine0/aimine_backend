@@ -1,0 +1,465 @@
+.
+├── HELP.md
+├── README.md
+├── build
+│   ├── classes
+│   │   └── java
+│   │       ├── main
+│   │       │   └── com
+│   │       │       └── aimine
+│   │       │           └── aimine
+│   │       │               ├── AimineApplication.class
+│   │       │               ├── aicombination
+│   │       │               │   ├── controller
+│   │       │               │   │   └── AiCombinationController.class
+│   │       │               │   ├── domain
+│   │       │               │   │   ├── AiCombination$AiCombinationBuilder.class
+│   │       │               │   │   ├── AiCombination.class
+│   │       │               │   │   ├── AiCombinationService$AiCombinationServiceBuilder.class
+│   │       │               │   │   └── AiCombinationService.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── AiCombinationDetailResponse$AiCombinationDetailResponseBuilder.class
+│   │       │               │   │   ├── AiCombinationDetailResponse$AiServiceDetail$AiServiceDetailBuilder.class
+│   │       │               │   │   ├── AiCombinationDetailResponse$AiServiceDetail.class
+│   │       │               │   │   ├── AiCombinationDetailResponse.class
+│   │       │               │   │   ├── AiCombinationListResponse$AiCombinationListResponseBuilder.class
+│   │       │               │   │   ├── AiCombinationListResponse$AiServiceInfo$AiServiceInfoBuilder.class
+│   │       │               │   │   ├── AiCombinationListResponse$AiServiceInfo.class
+│   │       │               │   │   ├── AiCombinationListResponse$CombinationInfo$CombinationInfoBuilder.class
+│   │       │               │   │   ├── AiCombinationListResponse$CombinationInfo.class
+│   │       │               │   │   └── AiCombinationListResponse.class
+│   │       │               │   ├── repository
+│   │       │               │   │   ├── AiCombinationRepository.class
+│   │       │               │   │   └── AiCombinationServiceRepository.class
+│   │       │               │   └── service
+│   │       │               │       └── AiCombinationService.class
+│   │       │               ├── aiservice
+│   │       │               │   ├── controller
+│   │       │               │   │   └── AiServiceController.class
+│   │       │               │   ├── domain
+│   │       │               │   │   ├── AiService$AiServiceBuilder.class
+│   │       │               │   │   ├── AiService$PricingType.class
+│   │       │               │   │   └── AiService.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── ServiceDetailResponse$CategoryInfo$CategoryInfoBuilder.class
+│   │       │               │   │   ├── ServiceDetailResponse$CategoryInfo.class
+│   │       │               │   │   ├── ServiceDetailResponse$KeywordInfo$KeywordInfoBuilder.class
+│   │       │               │   │   ├── ServiceDetailResponse$KeywordInfo.class
+│   │       │               │   │   ├── ServiceDetailResponse$ReviewInfo$ReviewInfoBuilder.class
+│   │       │               │   │   ├── ServiceDetailResponse$ReviewInfo.class
+│   │       │               │   │   ├── ServiceDetailResponse$ServiceDetailData$ServiceDetailDataBuilder.class
+│   │       │               │   │   ├── ServiceDetailResponse$ServiceDetailData.class
+│   │       │               │   │   ├── ServiceDetailResponse$ServiceDetailResponseBuilder.class
+│   │       │               │   │   ├── ServiceDetailResponse$UserInfo$UserInfoBuilder.class
+│   │       │               │   │   ├── ServiceDetailResponse$UserInfo.class
+│   │       │               │   │   ├── ServiceDetailResponse.class
+│   │       │               │   │   ├── ServiceListResponse$CategoryInfo$CategoryInfoBuilder.class
+│   │       │               │   │   ├── ServiceListResponse$CategoryInfo.class
+│   │       │               │   │   ├── ServiceListResponse$ServiceData$ServiceDataBuilder.class
+│   │       │               │   │   ├── ServiceListResponse$ServiceData.class
+│   │       │               │   │   ├── ServiceListResponse$ServiceListResponseBuilder.class
+│   │       │               │   │   └── ServiceListResponse.class
+│   │       │               │   ├── repository
+│   │       │               │   │   └── AiServiceRepository.class
+│   │       │               │   └── service
+│   │       │               │       └── AiServiceService.class
+│   │       │               ├── auth
+│   │       │               │   ├── config
+│   │       │               │   │   └── JwtProperties.class
+│   │       │               │   ├── controller
+│   │       │               │   │   └── AuthController.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── AuthGoogleLoginResponse$AuthGoogleLoginResponseBuilder.class
+│   │       │               │   │   ├── AuthGoogleLoginResponse$UserInfo$UserInfoBuilder.class
+│   │       │               │   │   ├── AuthGoogleLoginResponse$UserInfo.class
+│   │       │               │   │   ├── AuthGoogleLoginResponse.class
+│   │       │               │   │   ├── AuthLogoutResponse$AuthLogoutResponseBuilder.class
+│   │       │               │   │   ├── AuthLogoutResponse.class
+│   │       │               │   │   ├── UserProfileResponse$UserProfileResponseBuilder.class
+│   │       │               │   │   └── UserProfileResponse.class
+│   │       │               │   ├── oauth
+│   │       │               │   │   ├── dto
+│   │       │               │   │   │   ├── GoogleUserInfo.class
+│   │       │               │   │   │   ├── OAuthUserInfo.class
+│   │       │               │   │   │   └── OAuthUserInfoFactory.class
+│   │       │               │   │   ├── handler
+│   │       │               │   │   │   ├── OAuth2FailureHandler.class
+│   │       │               │   │   │   └── OAuth2SuccessHandler.class
+│   │       │               │   │   └── service
+│   │       │               │   │       └── OAuthService.class
+│   │       │               │   └── service
+│   │       │               │       └── AuthService.class
+│   │       │               ├── bookmark
+│   │       │               │   ├── controller
+│   │       │               │   │   └── BookmarkController.class
+│   │       │               │   ├── domain
+│   │       │               │   │   ├── Bookmark$BookmarkBuilder.class
+│   │       │               │   │   └── Bookmark.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── BookmarkCreateRequest$BookmarkCreateRequestBuilder.class
+│   │       │               │   │   ├── BookmarkCreateRequest.class
+│   │       │               │   │   ├── BookmarkCreateResponse$BookmarkCreateResponseBuilder.class
+│   │       │               │   │   ├── BookmarkCreateResponse$BookmarkInfo$BookmarkInfoBuilder.class
+│   │       │               │   │   ├── BookmarkCreateResponse$BookmarkInfo.class
+│   │       │               │   │   ├── BookmarkCreateResponse.class
+│   │       │               │   │   ├── BookmarkDeleteResponse$BookmarkDeleteResponseBuilder.class
+│   │       │               │   │   ├── BookmarkDeleteResponse.class
+│   │       │               │   │   ├── BookmarkListResponse$BookmarkInfo$BookmarkInfoBuilder.class
+│   │       │               │   │   ├── BookmarkListResponse$BookmarkInfo.class
+│   │       │               │   │   ├── BookmarkListResponse$BookmarkListResponseBuilder.class
+│   │       │               │   │   └── BookmarkListResponse.class
+│   │       │               │   ├── repository
+│   │       │               │   │   └── BookmarkRepository.class
+│   │       │               │   └── service
+│   │       │               │       └── BookmarkService.class
+│   │       │               ├── category
+│   │       │               │   ├── controller
+│   │       │               │   │   └── CategoryController.class
+│   │       │               │   ├── domain
+│   │       │               │   │   ├── Category$CategoryBuilder.class
+│   │       │               │   │   └── Category.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── CategoryListResponse$CategoryInfo$CategoryInfoBuilder.class
+│   │       │               │   │   ├── CategoryListResponse$CategoryInfo.class
+│   │       │               │   │   ├── CategoryListResponse$CategoryListResponseBuilder.class
+│   │       │               │   │   └── CategoryListResponse.class
+│   │       │               │   ├── repository
+│   │       │               │   │   └── CategoryRepository.class
+│   │       │               │   └── service
+│   │       │               │       └── CategoryService.class
+│   │       │               ├── common
+│   │       │               │   ├── config
+│   │       │               │   │   ├── JpaConfig.class
+│   │       │               │   │   ├── SecurityConfig.class
+│   │       │               │   │   └── SwaggerConfig.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── ApiPageResponse$ApiPageResponseBuilder.class
+│   │       │               │   │   ├── ApiPageResponse$PageInfo$PageInfoBuilder.class
+│   │       │               │   │   ├── ApiPageResponse$PageInfo.class
+│   │       │               │   │   ├── ApiPageResponse.class
+│   │       │               │   │   ├── ApiResponse$ApiResponseBuilder.class
+│   │       │               │   │   └── ApiResponse.class
+│   │       │               │   ├── exception
+│   │       │               │   │   ├── BusinessException.class
+│   │       │               │   │   ├── ErrorResponse$ErrorResponseBuilder.class
+│   │       │               │   │   ├── ErrorResponse.class
+│   │       │               │   │   ├── GlobalExceptionHandler.class
+│   │       │               │   │   └── errorcode
+│   │       │               │   │       ├── AiServiceErrorCode.class
+│   │       │               │   │       ├── AuthErrorCode.class
+│   │       │               │   │       ├── BookmarkErrorCode.class
+│   │       │               │   │       ├── CommonErrorCode.class
+│   │       │               │   │       ├── ErrorCode.class
+│   │       │               │   │       ├── ReviewErrorCode.class
+│   │       │               │   │       └── UserErrorCode.class
+│   │       │               │   └── util
+│   │       │               │       ├── Direction.class
+│   │       │               │       └── SortedBy.class
+│   │       │               ├── keyword
+│   │       │               │   ├── controller
+│   │       │               │   │   └── KeywordController.class
+│   │       │               │   ├── domain
+│   │       │               │   │   ├── AiServiceKeyword$AiServiceKeywordBuilder.class
+│   │       │               │   │   ├── AiServiceKeyword.class
+│   │       │               │   │   ├── Keyword$KeywordBuilder.class
+│   │       │               │   │   ├── Keyword$KeywordType.class
+│   │       │               │   │   └── Keyword.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── KeywordByTypeResponse$KeywordByTypeResponseBuilder.class
+│   │       │               │   │   ├── KeywordByTypeResponse$KeywordInfo$KeywordInfoBuilder.class
+│   │       │               │   │   ├── KeywordByTypeResponse$KeywordInfo.class
+│   │       │               │   │   ├── KeywordByTypeResponse.class
+│   │       │               │   │   ├── KeywordListResponse$KeywordInfo$KeywordInfoBuilder.class
+│   │       │               │   │   ├── KeywordListResponse$KeywordInfo.class
+│   │       │               │   │   ├── KeywordListResponse$KeywordListResponseBuilder.class
+│   │       │               │   │   ├── KeywordListResponse.class
+│   │       │               │   │   ├── KeywordServiceListResponse$KeywordInfo$KeywordInfoBuilder.class
+│   │       │               │   │   ├── KeywordServiceListResponse$KeywordInfo.class
+│   │       │               │   │   ├── KeywordServiceListResponse$KeywordServiceListResponseBuilder.class
+│   │       │               │   │   ├── KeywordServiceListResponse$ToolInfo$ToolInfoBuilder.class
+│   │       │               │   │   ├── KeywordServiceListResponse$ToolInfo.class
+│   │       │               │   │   └── KeywordServiceListResponse.class
+│   │       │               │   ├── repository
+│   │       │               │   │   ├── AiServiceKeywordRepository.class
+│   │       │               │   │   └── KeywordRepository.class
+│   │       │               │   └── service
+│   │       │               │       └── KeywordService.class
+│   │       │               ├── review
+│   │       │               │   ├── controller
+│   │       │               │   │   └── ReviewController.class
+│   │       │               │   ├── domain
+│   │       │               │   │   ├── Review$ReviewBuilder.class
+│   │       │               │   │   └── Review.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── ReviewCreateRequest$ReviewCreateRequestBuilder.class
+│   │       │               │   │   ├── ReviewCreateRequest.class
+│   │       │               │   │   ├── ReviewCreateResponse$ReviewCreateResponseBuilder.class
+│   │       │               │   │   ├── ReviewCreateResponse$ReviewInfo$ReviewInfoBuilder.class
+│   │       │               │   │   ├── ReviewCreateResponse$ReviewInfo.class
+│   │       │               │   │   ├── ReviewCreateResponse.class
+│   │       │               │   │   ├── ReviewDeleteResponse$ReviewDeleteResponseBuilder.class
+│   │       │               │   │   └── ReviewDeleteResponse.class
+│   │       │               │   ├── repository
+│   │       │               │   │   └── ReviewRepository.class
+│   │       │               │   └── service
+│   │       │               │       └── ReviewService.class
+│   │       │               ├── search
+│   │       │               │   ├── controller
+│   │       │               │   │   └── SearchController.class
+│   │       │               │   ├── dto
+│   │       │               │   │   ├── SearchResponse$AiServiceInfo$AiServiceInfoBuilder.class
+│   │       │               │   │   ├── SearchResponse$AiServiceInfo.class
+│   │       │               │   │   ├── SearchResponse$SearchResponseBuilder.class
+│   │       │               │   │   └── SearchResponse.class
+│   │       │               │   └── service
+│   │       │               │       └── SearchService.class
+│   │       │               ├── security
+│   │       │               │   ├── domain
+│   │       │               │   │   ├── RefreshToken$RefreshTokenBuilder.class
+│   │       │               │   │   └── RefreshToken.class
+│   │       │               │   ├── jwt
+│   │       │               │   │   ├── JwtAuthenticationFilter.class
+│   │       │               │   │   └── JwtTokenProvider.class
+│   │       │               │   ├── repository
+│   │       │               │   │   └── RefreshTokenRepository.class
+│   │       │               │   └── service
+│   │       │               │       └── RefreshTokenService.class
+│   │       │               └── user
+│   │       │                   ├── domain
+│   │       │                   │   ├── User$Role.class
+│   │       │                   │   ├── User$UserBuilder.class
+│   │       │                   │   └── User.class
+│   │       │                   ├── repository
+│   │       │                   │   └── UserRepository.class
+│   │       │                   └── service
+│   │       │                       └── UserService.class
+│   │       └── test
+│   │           └── com
+│   │               └── aimine
+│   │                   └── aimine
+│   │                       └── AimineApplicationTests.class
+│   ├── generated
+│   │   └── sources
+│   │       ├── annotationProcessor
+│   │       │   └── java
+│   │       │       ├── main
+│   │       │       └── test
+│   │       └── headers
+│   │           └── java
+│   │               ├── main
+│   │               └── test
+│   ├── libs
+│   │   └── app.jar
+│   ├── reports
+│   │   ├── problems
+│   │   │   └── problems-report.html
+│   │   └── tests
+│   │       └── test
+│   │           ├── classes
+│   │           │   └── com.aimine.aimine.AimineApplicationTests.html
+│   │           ├── css
+│   │           │   ├── base-style.css
+│   │           │   └── style.css
+│   │           ├── index.html
+│   │           ├── js
+│   │           │   └── report.js
+│   │           └── packages
+│   │               └── com.aimine.aimine.html
+│   ├── resolvedMainClassName
+│   ├── resources
+│   │   └── main
+│   │       ├── application-local.properties
+│   │       ├── application-neon.properties
+│   │       ├── application-test.properties
+│   │       └── application.properties
+│   ├── test-results
+│   │   └── test
+│   │       ├── TEST-com.aimine.aimine.AimineApplicationTests.xml
+│   │       └── binary
+│   │           ├── output.bin
+│   │           ├── output.bin.idx
+│   │           └── results.bin
+│   └── tmp
+│       ├── bootJar
+│       │   └── MANIFEST.MF
+│       ├── compileJava
+│       │   └── previous-compilation-data.bin
+│       ├── compileTestJava
+│       │   └── previous-compilation-data.bin
+│       └── test
+├── build.gradle
+├── gradle
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+├── settings.gradle
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── aimine
+│   │   │           └── aimine
+│   │   │               ├── AimineApplication.java
+│   │   │               ├── aicombination
+│   │   │               │   ├── controller
+│   │   │               │   │   └── AiCombinationController.java
+│   │   │               │   ├── domain
+│   │   │               │   │   ├── AiCombination.java
+│   │   │               │   │   └── AiCombinationService.java
+│   │   │               │   ├── dto
+│   │   │               │   │   ├── AiCombinationDetailResponse.java
+│   │   │               │   │   └── AiCombinationListResponse.java
+│   │   │               │   ├── repository
+│   │   │               │   │   ├── AiCombinationRepository.java
+│   │   │               │   │   └── AiCombinationServiceRepository.java
+│   │   │               │   └── service
+│   │   │               │       └── AiCombinationService.java
+│   │   │               ├── aiservice
+│   │   │               │   ├── controller
+│   │   │               │   │   └── AiServiceController.java
+│   │   │               │   ├── domain
+│   │   │               │   │   └── AiService.java
+│   │   │               │   ├── dto
+│   │   │               │   │   ├── ServiceDetailResponse.java
+│   │   │               │   │   └── ServiceListResponse.java
+│   │   │               │   ├── repository
+│   │   │               │   │   └── AiServiceRepository.java
+│   │   │               │   └── service
+│   │   │               │       └── AiServiceService.java
+│   │   │               ├── auth
+│   │   │               │   ├── config
+│   │   │               │   │   └── JwtProperties.java
+│   │   │               │   ├── controller
+│   │   │               │   │   └── AuthController.java
+│   │   │               │   ├── dto
+│   │   │               │   │   ├── AuthGoogleLoginResponse.java
+│   │   │               │   │   ├── AuthLogoutResponse.java
+│   │   │               │   │   └── UserProfileResponse.java
+│   │   │               │   ├── oauth
+│   │   │               │   │   ├── dto
+│   │   │               │   │   │   ├── GoogleUserInfo.java
+│   │   │               │   │   │   ├── OAuthUserInfo.java
+│   │   │               │   │   │   └── OAuthUserInfoFactory.java
+│   │   │               │   │   ├── handler
+│   │   │               │   │   │   ├── OAuth2FailureHandler.java
+│   │   │               │   │   │   └── OAuth2SuccessHandler.java
+│   │   │               │   │   └── service
+│   │   │               │   │       └── OAuthService.java
+│   │   │               │   └── service
+│   │   │               │       └── AuthService.java
+│   │   │               ├── bookmark
+│   │   │               │   ├── controller
+│   │   │               │   │   └── BookmarkController.java
+│   │   │               │   ├── domain
+│   │   │               │   │   └── Bookmark.java
+│   │   │               │   ├── dto
+│   │   │               │   │   ├── BookmarkCreateRequest.java
+│   │   │               │   │   ├── BookmarkCreateResponse.java
+│   │   │               │   │   ├── BookmarkDeleteResponse.java
+│   │   │               │   │   └── BookmarkListResponse.java
+│   │   │               │   ├── repository
+│   │   │               │   │   └── BookmarkRepository.java
+│   │   │               │   └── service
+│   │   │               │       └── BookmarkService.java
+│   │   │               ├── category
+│   │   │               │   ├── controller 
+│   │   │               │   │   └── CategoryController.java
+│   │   │               │   ├── domain
+│   │   │               │   │   └── Category.java
+│   │   │               │   ├── dto
+│   │   │               │   │   └── CategoryListResponse.java
+│   │   │               │   ├── repository
+│   │   │               │   │   └── CategoryRepository.java
+│   │   │               │   └── service
+│   │   │               │       └── CategoryService.java
+│   │   │               ├── common
+│   │   │               │   ├── config
+│   │   │               │   │   ├── JpaConfig.java
+│   │   │               │   │   ├── SecurityConfig.java
+│   │   │               │   │   └── SwaggerConfig.java
+│   │   │               │   ├── dto
+│   │   │               │   │   ├── ApiPageResponse.java
+│   │   │               │   │   └── ApiResponse.java
+│   │   │               │   ├── exception
+│   │   │               │   │   ├── BusinessException.java
+│   │   │               │   │   ├── ErrorResponse.java
+│   │   │               │   │   ├── GlobalExceptionHandler.java
+│   │   │               │   │   └── errorcode
+│   │   │               │   │       ├── AiServiceErrorCode.java
+│   │   │               │   │       ├── AuthErrorCode.java
+│   │   │               │   │       ├── BookmarkErrorCode.java
+│   │   │               │   │       ├── CommonErrorCode.java
+│   │   │               │   │       ├── ErrorCode.java
+│   │   │               │   │       ├── ReviewErrorCode.java
+│   │   │               │   │       └── UserErrorCode.java
+│   │   │               │   └── util
+│   │   │               │       ├── Direction.java
+│   │   │               │       └── SortedBy.java
+│   │   │               ├── keyword
+│   │   │               │   ├── controller
+│   │   │               │   │   └── KeywordController.java
+│   │   │               │   ├── domain
+│   │   │               │   │   ├── AiServiceKeyword.java
+│   │   │               │   │   └── Keyword.java
+│   │   │               │   ├── dto
+│   │   │               │   │   ├── KeywordByTypeResponse.java
+│   │   │               │   │   ├── KeywordListResponse.java
+│   │   │               │   │   └── KeywordServiceListResponse.java
+│   │   │               │   ├── repository
+│   │   │               │   │   ├── AiServiceKeywordRepository.java
+│   │   │               │   │   └── KeywordRepository.java
+│   │   │               │   └── service
+│   │   │               │       └── KeywordService.java
+│   │   │               ├── review
+│   │   │               │   ├── controller
+│   │   │               │   │   └── ReviewController.java
+│   │   │               │   ├── domain
+│   │   │               │   │   └── Review.java
+│   │   │               │   ├── dto
+│   │   │               │   │   ├── ReviewCreateRequest.java
+│   │   │               │   │   ├── ReviewCreateResponse.java
+│   │   │               │   │   └── ReviewDeleteResponse.java
+│   │   │               │   ├── repository
+│   │   │               │   │   └── ReviewRepository.java
+│   │   │               │   └── service
+│   │   │               │       └── ReviewService.java
+│   │   │               ├── search
+│   │   │               │   ├── controller
+│   │   │               │   │   └── SearchController.java
+│   │   │               │   ├── dto
+│   │   │               │   │   └── SearchResponse.java
+│   │   │               │   └── service
+│   │   │               │       └── SearchService.java
+│   │   │               ├── security
+│   │   │               │   ├── domain
+│   │   │               │   │   └── RefreshToken.java
+│   │   │               │   ├── jwt
+│   │   │               │   │   ├── JwtAuthenticationFilter.java
+│   │   │               │   │   └── JwtTokenProvider.java
+│   │   │               │   ├── repository
+│   │   │               │   │   └── RefreshTokenRepository.java
+│   │   │               │   └── service
+│   │   │               │       └── RefreshTokenService.java
+│   │   │               └── user
+│   │   │                   ├── domain
+│   │   │                   │   └── User.java
+│   │   │                   ├── repository
+│   │   │                   │   └── UserRepository.java
+│   │   │                   └── service
+│   │   │                       └── UserService.java
+│   │   └── resources
+│   │       ├── application-local.properties
+│   │       ├── application-neon.properties
+│   │       ├── application-test.properties
+│   │       └── application.properties
+│   └── test
+│       └── java
+│           └── com
+│               └── aimine
+│                   └── aimine
+│                       └── AimineApplicationTests.java
+└── test.txt
+
+183 directories, 280 files
