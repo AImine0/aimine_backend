@@ -10,16 +10,20 @@ import com.aimine.aimine.review.domain.Review;
 import com.aimine.aimine.review.dto.ReviewCreateRequest;
 import com.aimine.aimine.review.dto.ReviewCreateResponse;
 import com.aimine.aimine.review.dto.ReviewDeleteResponse;
+import com.aimine.aimine.review.dto.ReviewListResponse;
 import com.aimine.aimine.review.repository.ReviewRepository;
 import com.aimine.aimine.user.domain.User;
 import com.aimine.aimine.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,6 +34,65 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final AiServiceRepository aiServiceRepository;
+
+    /**
+     * 리뷰 목록 조회 (AI 서비스별 또는 전체)
+     */
+    public ReviewListResponse getReviews(Long serviceId) {
+        log.debug("리뷰 목록 조회: serviceId={}", serviceId);
+
+        List<Review> reviews;
+        double averageRating = 0.0;
+
+        if (serviceId != null) {
+            // 특정 AI 서비스의 리뷰 조회
+            AiService aiService = aiServiceRepository.findById(serviceId)
+                    .orElseThrow(() -> new BusinessException(AiServiceErrorCode.AI_SERVICE_NOT_FOUND));
+
+            reviews = reviewRepository.findByAiService(aiService, Pageable.unpaged()).getContent();
+
+            // 해당 서비스의 평균 평점 계산
+            averageRating = reviewRepository.findAverageRatingByAiService(aiService)
+                    .map(BigDecimal::doubleValue)
+                    .orElse(0.0);
+
+        } else {
+            // 전체 리뷰 조회
+            reviews = reviewRepository.findAll();
+
+            // 전체 평균 평점 계산
+            if (!reviews.isEmpty()) {
+                averageRating = reviews.stream()
+                        .mapToInt(Review::getRating)
+                        .average()
+                        .orElse(0.0);
+            }
+        }
+
+        // Review 엔티티를 ReviewInfo DTO로 변환
+        List<ReviewListResponse.ReviewInfo> reviewInfos = reviews.stream()
+                .map(review -> ReviewListResponse.ReviewInfo.builder()
+                        .id(review.getId())
+                        .userNickname(review.getUser().getName()) // User의 name을 nickname으로 사용
+                        .rating(review.getRating())
+                        .content(review.getContent())
+                        .createdAt(review.getCreatedAt())
+                        .updatedAt(review.getCreatedAt()) // Review에는 updatedAt이 없으므로 createdAt 사용
+                        .build())
+                .collect(Collectors.toList());
+
+        // 응답 DTO 생성
+        ReviewListResponse response = ReviewListResponse.builder()
+                .reviews(reviewInfos)
+                .totalCount(reviewInfos.size())
+                .averageRating(Math.round(averageRating * 100.0) / 100.0) // 소수점 2자리까지
+                .build();
+
+        log.info("리뷰 목록 조회 완료: serviceId={}, totalCount={}, averageRating={}",
+                serviceId, response.getTotalCount(), response.getAverageRating());
+
+        return response;
+    }
 
     /**
      * 리뷰 작성

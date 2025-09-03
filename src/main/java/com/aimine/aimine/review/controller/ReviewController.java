@@ -4,6 +4,7 @@ import com.aimine.aimine.common.dto.ApiResponse;
 import com.aimine.aimine.review.dto.ReviewCreateRequest;
 import com.aimine.aimine.review.dto.ReviewCreateResponse;
 import com.aimine.aimine.review.dto.ReviewDeleteResponse;
+import com.aimine.aimine.review.dto.ReviewListResponse;
 import com.aimine.aimine.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,6 +24,20 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
 
     private final ReviewService reviewService;
+
+    @Operation(summary = "리뷰 목록 조회",
+            description = "AI 서비스별 또는 전체 리뷰 목록을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<ApiResponse<ReviewListResponse>> getReviews(
+            @Parameter(description = "AI 서비스 ID (선택사항, 없으면 전체 조회)", example = "1")
+            @RequestParam(required = false) Long serviceId
+    ) {
+        log.info("리뷰 목록 조회 요청: serviceId={}", serviceId);
+
+        ReviewListResponse response = reviewService.getReviews(serviceId);
+
+        return ResponseEntity.ok(ApiResponse.success("리뷰 조회 성공", response));
+    }
 
     @Operation(summary = "리뷰 작성",
             description = "AI 서비스에 대한 리뷰를 작성합니다.")
