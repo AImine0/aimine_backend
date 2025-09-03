@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -87,6 +88,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(body("C500", "서버 내부 오류가 발생했습니다."));
     }
-
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<?> handleNoResource(NoResourceFoundException ex, HttpServletRequest req) {
+        log.info("[{} {}] 404 Not Found(Resource): {}", req.getMethod(), req.getRequestURI(), ex.toString(), ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(body("R404", "요청하신 리소스를 찾을 수 없습니다."));
+    }
 
 }
