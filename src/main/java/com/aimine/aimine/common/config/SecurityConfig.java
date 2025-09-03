@@ -7,6 +7,7 @@ import com.aimine.aimine.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -44,12 +45,20 @@ public class SecurityConfig {
                         .requestMatchers("/categories/**").permitAll() // 카테고리도 공개
                         .requestMatchers("/keywords/**").permitAll()
                         .requestMatchers("/ai-combinations/**").permitAll()
+
+                        // 리뷰 관련: 조회는 공개, 작성/삭제는 인증 필요
+                        .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()      // 리뷰 조회 - 공개
+                        .requestMatchers(HttpMethod.POST, "/reviews/**").authenticated() // 리뷰 작성 - 인증 필요
+                        .requestMatchers(HttpMethod.DELETE, "/reviews/**").authenticated() // 리뷰 삭제 - 인증 필요
+
                         // OAuth2 관련 엔드포인트 허용
                         .requestMatchers("/oauth2/authorization/**").permitAll()
                         .requestMatchers("/login/oauth2/code/**").permitAll()
+
                         // 인증이 필요한 엔드포인트
                         .requestMatchers("/auth/me", "/auth/logout").authenticated()
-                        .requestMatchers("/bookmarks/**", "/reviews/**").authenticated()
+                        .requestMatchers("/bookmarks/**").authenticated() // 북마크는 모든 작업에 인증 필요
+
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

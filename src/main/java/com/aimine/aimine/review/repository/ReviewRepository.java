@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,11 +23,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 사용자별 리뷰 목록 (페이징)
     Page<Review> findByUser(User user, Pageable pageable);
 
-    // 특정 사용자의 특정 서비스 리뷰 조회
-    Optional<Review> findByUserAndAiService(User user, AiService aiService);
+    // 특정 사용자의 특정 서비스 리뷰 조회 (첫 번째만)
+    Optional<Review> findFirstByUserAndAiServiceOrderByCreatedAtDesc(User user, AiService aiService);
 
-    // 리뷰 존재 확인
-    boolean existsByUserAndAiService(User user, AiService aiService);
+    // 특정 사용자의 특정 서비스 모든 리뷰 조회
+    List<Review> findByUserAndAiService(User user, AiService aiService);
+
+    // 리뷰 존재 확인 - 중복 허용으로 변경되었으므로 개수 확인
+    long countByUserAndAiService(User user, AiService aiService);
 
     // AI 서비스별 평균 평점 계산
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.aiService = :aiService")

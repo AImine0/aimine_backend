@@ -95,7 +95,7 @@ public class ReviewService {
     }
 
     /**
-     * 리뷰 작성
+     * 리뷰 작성 - 중복 확인 제거, 같은 사용자가 같은 서비스에 여러 리뷰 작성 가능
      */
     @Transactional
     public ReviewCreateResponse createReview(Long userId, ReviewCreateRequest request) {
@@ -110,10 +110,7 @@ public class ReviewService {
         AiService aiService = aiServiceRepository.findById(request.getToolId())
                 .orElseThrow(() -> new BusinessException(AiServiceErrorCode.AI_SERVICE_NOT_FOUND));
 
-        // 이미 리뷰를 작성했는지 확인
-        if (reviewRepository.existsByUserAndAiService(user, aiService)) {
-            throw new BusinessException(ReviewErrorCode.REVIEW_ALREADY_EXISTS);
-        }
+        // 중복 리뷰 확인 로직 제거 - 같은 사용자가 같은 서비스에 여러 리뷰 작성 가능
 
         // 평점 유효성 검사
         if (request.getRating() < 1 || request.getRating() > 5) {
@@ -196,6 +193,7 @@ public class ReviewService {
 
     /**
      * 사용자가 특정 AI 서비스에 리뷰를 작성했는지 확인
+     * 중복 리뷰 허용으로 변경되었으므로 리뷰 존재 여부만 확인
      */
     public boolean hasUserReviewed(Long userId, Long serviceId) {
         User user = userRepository.findById(userId).orElse(null);
@@ -205,7 +203,8 @@ public class ReviewService {
             return false;
         }
 
-        return reviewRepository.existsByUserAndAiService(user, aiService);
+        // 해당 사용자가 해당 서비스에 대한 리뷰가 하나라도 있는지 확인
+        return reviewRepository.countByUserAndAiService(user, aiService) > 0;
     }
 
     /**
@@ -218,5 +217,33 @@ public class ReviewService {
         }
 
         return reviewRepository.countByUser(user);
+    }
+
+    /**
+     * 특정 사용자가 특정 서비스에 작성한 리뷰 개수 조회
+     */
+    public long getUserServiceReviewCount(Long userId, Long serviceId) {
+        User user = userRepository.findById(userId).orElse(null);
+        AiService aiService = aiServiceRepository.findById(serviceId).orElse(null);
+
+        if (user == null || aiService == null) {
+            return 0;
+        }
+
+        return reviewRepository.countByUserAndAiService(user, aiService);
+    }
+
+    /**
+     * 특정 사용자가 특정 서비스에 작성한 모든 리뷰 조회
+     */
+    public List<Review> getUserServiceReviews(Long userId, Long serviceId) {
+        User user = userRepository.findById(userId).orElse(null);
+        AiService aiService = aiServiceRepository.findById(serviceId).orElse(null);
+
+        if (user == null || aiService == null) {
+            return List.of();
+        }
+
+        return reviewRepository.findByUserAndAiService(user, aiService);
     }
 }

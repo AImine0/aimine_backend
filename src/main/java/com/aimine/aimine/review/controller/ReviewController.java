@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
+
 public class ReviewController {
 
     private final ReviewService reviewService;
