@@ -87,4 +87,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(body("C500", "서버 내부 오류가 발생했습니다."));
     }
+
+
 }
