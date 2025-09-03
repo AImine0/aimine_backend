@@ -70,7 +70,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "https://aimine.vercel.app",
+                "https://*.railway.app"
+        ));
         // 허용할 오리진 설정
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         // 또는 특정 도메인만: configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
@@ -92,4 +97,5 @@ public class SecurityConfig {
 
         return source;
     }
+
 }
