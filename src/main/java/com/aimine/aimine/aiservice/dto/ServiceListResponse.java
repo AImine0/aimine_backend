@@ -59,14 +59,14 @@ public class ServiceListResponse {
                             .serviceName(service.getName())
                             .description(service.getDescription() != null ? service.getDescription() : "AI 서비스 설명")
                             .websiteUrl(service.getOfficialUrl())
-                            .logoUrl("https://logo-url.com/" + service.getName().toLowerCase() + ".png")
+                            .logoUrl(service.getImagePath()) // DB의 실제 이미지 경로 사용
                             .launchDate(service.getReleaseDate())
                             .category(CategoryInfo.builder()
                                     .id(service.getCategory().getId())
                                     .name(service.getCategory().getDisplayName())
                                     .build())
                             .tag(service.getTags() != null && !service.getTags().trim().isEmpty() ?
-                                    service.getTags().split(",")[0].trim() : "AI 서비스") // 첫 번째 태그 또는 기본값
+                                    service.getTags().split(",")[0].trim() : "AI 서비스")
                             .pricingType(service.getPricingType().name())
                             .overallRating(service.getAverageRating())
                             .keywords(keywords)

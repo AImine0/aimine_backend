@@ -154,15 +154,7 @@ public class SearchService {
         }
     }
 
-    /**
-     * AiService를 AiServiceInfo로 변환
-     */
-    /**
-     * AiService를 AiServiceInfo로 변환
-     */
-    /**
-     * AiService를 AiServiceInfo로 변환
-     */
+
     private SearchResponse.AiServiceInfo convertToAiServiceInfo(AiService aiService) {
         // 임시로 빈 키워드 리스트 사용 (나중에 실제 데이터로 대체)
         List<String> keywords = List.of("텍스트 생성", "대화", "AI 어시스턴트");
@@ -170,8 +162,8 @@ public class SearchService {
         return SearchResponse.AiServiceInfo.builder()
                 .id(aiService.getId())
                 .serviceName(aiService.getName())
-                .description("AI 서비스 설명")
-                .logoUrl("https://example.com/logo.png")
+                .description(aiService.getDescription()) // ✅ 실제 description 사용
+                .logoUrl(aiService.getSearchLogoPath()) // ✅ DB의 실제 검색 로고 경로 사용
                 .categoryName(aiService.getCategory().getDisplayName())
                 .pricingType(aiService.getPricingType().name().toLowerCase())
                 .overallRating(aiService.getAverageRating())

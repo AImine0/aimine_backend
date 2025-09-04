@@ -81,6 +81,8 @@ public class ServiceDetailResponse {
     }
 
     // 정적 팩토리 메소드
+    // ServiceDetailResponse.java의 from 메소드 수정 부분
+
     public static ServiceDetailResponse from(AiService aiService, List<Keyword> keywords, List<Review> reviews) {
         List<KeywordInfo> keywordInfos = keywords.stream()
                 .map(keyword -> KeywordInfo.builder()
@@ -94,7 +96,7 @@ public class ServiceDetailResponse {
                 .map(review -> ReviewInfo.builder()
                         .id(review.getId())
                         .user(UserInfo.builder()
-                                .nickname(review.getUser().getName()) // 사용자 이름을 닉네임으로 사용
+                                .nickname(review.getUser().getName()) // 닉네임으로 사용
                                 .build())
                         .rating(BigDecimal.valueOf(review.getRating()))
                         .content(review.getContent())
@@ -105,9 +107,9 @@ public class ServiceDetailResponse {
         ServiceDetailData data = ServiceDetailData.builder()
                 .id(aiService.getId())
                 .serviceName(aiService.getName())
-                .description("AI 서비스 상세 설명") // 임시 설명
+                .description(aiService.getDescription() != null ? aiService.getDescription() : "AI 서비스 상세 설명")
                 .websiteUrl(aiService.getOfficialUrl())
-                .logoUrl("https://logo-url.com/" + aiService.getName().toLowerCase() + ".png") // 임시 로고
+                .logoUrl(aiService.getServiceImagePath()) // 상세 페이지용 이미지 경로 사용
                 .launchDate(aiService.getReleaseDate())
                 .category(CategoryInfo.builder()
                         .id(aiService.getCategory().getId())

@@ -41,7 +41,7 @@ public class AiCombinationDetailResponse {
                 .map(service -> AiServiceDetail.builder()
                         .id(service.getId())
                         .name(service.getName())
-                        .logoUrl("https://example.com/" + service.getName().toLowerCase() + "-logo.png")
+                        .logoUrl(service.getImagePath()) // DB의 실제 이미지 경로 사용
                         .purpose(getPurposeByService(service.getName())) // 서비스별 목적 설정
                         .tag(getTagByService(service)) // 서비스별 태그 설정
                         .build())

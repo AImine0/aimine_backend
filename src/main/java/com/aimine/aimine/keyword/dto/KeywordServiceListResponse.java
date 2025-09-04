@@ -62,8 +62,8 @@ public class KeywordServiceListResponse {
                     return ToolInfo.builder()
                             .id(service.getId())
                             .serviceName(service.getName())
-                            .description(service.getOfficialUrl()) // 임시로 URL 사용
-                            .logoUrl("https://example.com/" + service.getName().toLowerCase() + "-logo.png") // 임시 로고 URL
+                            .description(service.getDescription()) // ✅ 실제 description 사용
+                            .logoUrl(service.getSearchLogoPath()) // ✅ DB의 실제 검색 로고 경로 사용
                             .categoryName(service.getCategory().getDisplayName())
                             .pricingType(service.getPricingType().name())
                             .overallRating(service.getAverageRating())

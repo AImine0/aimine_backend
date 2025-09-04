@@ -39,8 +39,8 @@ public class BookmarkListResponse {
                         .id(bookmark.getId())
                         .aiServiceId(bookmark.getAiService().getId())
                         .serviceName(bookmark.getAiService().getName())
-                        .serviceSummary(bookmark.getAiService().getOfficialUrl()) // 임시로 URL 사용
-                        .logoUrl("https://example.com/" + bookmark.getAiService().getName().toLowerCase() + "-logo.png")
+                        .serviceSummary(bookmark.getAiService().getDescription()) // ✅ 실제 description 사용
+                        .logoUrl(bookmark.getAiService().getImagePath()) // ✅ DB의 실제 이미지 경로 사용
                         .categoryDisplayName(bookmark.getAiService().getCategory().getDisplayName())
                         .pricingType(bookmark.getAiService().getPricingType().name().toLowerCase())
                         .build())
