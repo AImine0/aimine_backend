@@ -32,7 +32,8 @@ public class ServiceListResponse {
         private String logoUrl;
         private LocalDate launchDate;
         private CategoryInfo category;
-        private String tag;
+        private String tag;  // DB의 tags 컬럼의 첫 번째 태그 (기존 호환성)
+        private String tags; // DB의 tags 컬럼 전체 내용 (새로 추가)
         private String pricingType;
         private BigDecimal overallRating;
         private List<String> keywords;
@@ -47,7 +48,7 @@ public class ServiceListResponse {
         private String name;
     }
 
-    // 정적 팩토리 메소드
+    // 정적 팩토리 메서드 
     public static ServiceListResponse from(List<AiService> aiServices, List<List<String>> keywordsList) {
         List<ServiceData> serviceDataList = aiServices.stream()
                 .map(service -> {
@@ -57,7 +58,8 @@ public class ServiceListResponse {
                     return ServiceData.builder()
                             .id(service.getId())
                             .serviceName(service.getName())
-                            .description(service.getDescription() != null ? service.getDescription() : "AI 서비스 설명")
+                            .description(service.getDescription() != null ?
+                                    service.getDescription() : "AI 서비스 설명")
                             .websiteUrl(service.getOfficialUrl())
                             .logoUrl("https://logo-url.com/" + service.getName().toLowerCase() + ".png")
                             .launchDate(service.getReleaseDate())
@@ -65,8 +67,12 @@ public class ServiceListResponse {
                                     .id(service.getCategory().getId())
                                     .name(service.getCategory().getDisplayName())
                                     .build())
+                            // 기존 tag 필드 (호환성 유지)
                             .tag(service.getTags() != null && !service.getTags().trim().isEmpty() ?
-                                    service.getTags().split(",")[0].trim() : "AI 서비스") // 첫 번째 태그 또는 기본값
+                                    service.getTags().split(",")[0].trim() : "AI 서비스")
+                            // 새로 추가: DB의 tags 컬럼 전체 내용
+                            .tags(service.getTags() != null && !service.getTags().trim().isEmpty() ?
+                                    service.getTags().trim() : "AI 서비스")
                             .pricingType(service.getPricingType().name())
                             .overallRating(service.getAverageRating())
                             .keywords(keywords)
