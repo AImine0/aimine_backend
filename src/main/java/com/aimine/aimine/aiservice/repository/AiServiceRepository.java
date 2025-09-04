@@ -49,6 +49,12 @@ public interface AiServiceRepository extends JpaRepository<AiService, Long> {
             Pageable pageable
     );
 
+    // 추천순 조회 최적화 (recommendation_score 기준)
+    @Query("SELECT DISTINCT a FROM AiService a " +
+            "LEFT JOIN FETCH a.category " +
+            "ORDER BY a.recommendationScore DESC NULLS LAST, a.averageRating DESC")
+    Page<AiService> findAllOrderByRecommendationWithCategory(Pageable pageable);
+
     // ==================== SearchService에서 필요한 메소드들 ====================
 
     // 이름으로 검색 (대소문자 무시)

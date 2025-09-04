@@ -148,19 +148,27 @@ public class AiServiceService {
     }
 
     /**
-     * 정렬 조건 생성
+     * 정렬 조건 생성 - 추천순/최신순만 지원
      */
     private Sort createSortOrder(String sort) {
-        if (sort == null) sort = "recommendation";
+        if (sort == null) sort = "rating"; // 기본값을 추천순으로 설정
 
         return switch (sort.toLowerCase()) {
-            case "rating" -> Sort.by("averageRating").descending()
-                    .and(Sort.by("totalReviews").descending());
-            case "latest" -> Sort.by("releaseDate").descending();
-            case "name" -> Sort.by("name").ascending();
-            case "recommendation" -> Sort.by("recommendationRank").ascending()
-                    .and(Sort.by("averageRating").descending());
-            default -> Sort.by("recommendationRank").ascending();
+            case "rating" -> {
+                // 추천순: recommendation_score 기준 (높은 순)
+                // recommendation_score가 null인 경우 평점으로 보조 정렬
+                yield Sort.by(Sort.Direction.DESC, "recommendationScore")
+                        .and(Sort.by(Sort.Direction.DESC, "averageRating"));
+            }
+            case "latest" -> {
+                // 최신순: release_date 기준 (최신 순)
+                yield Sort.by(Sort.Direction.DESC, "releaseDate");
+            }
+            default -> {
+                // 기본값: 추천순
+                yield Sort.by(Sort.Direction.DESC, "recommendationScore")
+                        .and(Sort.by(Sort.Direction.DESC, "averageRating"));
+            }
         };
     }
 

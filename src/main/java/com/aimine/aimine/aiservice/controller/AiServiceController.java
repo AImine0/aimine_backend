@@ -37,7 +37,7 @@ public class AiServiceController {
             @Parameter(description = "검색어", example = "ChatGPT")
             @RequestParam(required = false) String search,
 
-            @Parameter(description = "정렬 기준 (rating, latest, name, recommendation)", example = "rating")
+            @Parameter(description = "정렬 기준 (rating: 추천순, latest: 최신순)", example = "rating")
             @RequestParam(defaultValue = "rating") String sort,
 
             @Parameter(description = "가격 타입 (FREE, FREEMIUM, PAID)", example = "FREEMIUM")
