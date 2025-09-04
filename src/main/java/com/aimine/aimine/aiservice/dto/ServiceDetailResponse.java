@@ -82,6 +82,8 @@ public class ServiceDetailResponse {
 
     // 정적 팩토리 메소드
     public static ServiceDetailResponse from(AiService aiService, List<Keyword> keywords, List<Review> reviews) {
+        String baseUrl = "https://aimine-api-production.up.railway.app"; // API 서버 주소
+
         List<KeywordInfo> keywordInfos = keywords.stream()
                 .map(keyword -> KeywordInfo.builder()
                         .id(keyword.getId())
@@ -105,9 +107,9 @@ public class ServiceDetailResponse {
         ServiceDetailData data = ServiceDetailData.builder()
                 .id(aiService.getId())
                 .serviceName(aiService.getName())
-                .description("AI 서비스 상세 설명") // 임시 설명
+                .description(aiService.getDescription() != null ? aiService.getDescription() : "AI 서비스 상세 설명")
                 .websiteUrl(aiService.getOfficialUrl())
-                .logoUrl("https://logo-url.com/" + aiService.getName().toLowerCase() + ".png") // 임시 로고
+                .logoUrl(aiService.getSearchLogoPath() != null ? baseUrl + aiService.getSearchLogoPath() : null)
                 .launchDate(aiService.getReleaseDate())
                 .category(CategoryInfo.builder()
                         .id(aiService.getCategory().getId())
@@ -124,4 +126,5 @@ public class ServiceDetailResponse {
                 .data(data)
                 .build();
     }
+
 }

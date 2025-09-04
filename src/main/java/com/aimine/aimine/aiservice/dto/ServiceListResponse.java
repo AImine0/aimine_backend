@@ -50,6 +50,8 @@ public class ServiceListResponse {
 
     // from 메서드 수정
     public static ServiceListResponse from(List<AiService> aiServices, List<List<String>> keywordsList) {
+        String baseUrl = "https://aimine-api-production.up.railway.app"; // API 서버 주소 (환경에 맞게 수정)
+
         List<ServiceData> serviceDataList = aiServices.stream()
                 .map(service -> {
                     int index = aiServices.indexOf(service);
@@ -58,22 +60,17 @@ public class ServiceListResponse {
                     return ServiceData.builder()
                             .id(service.getId())
                             .serviceName(service.getName())
-                            // DB의 description 필드 사용
-                            .description(service.getDescription() != null ?
-                                    service.getDescription() : "AI 서비스 설명")
+                            .description(service.getDescription() != null ? service.getDescription() : "AI 서비스 설명")
                             .websiteUrl(service.getOfficialUrl())
-                            .logoUrl("https://logo-url.com/" + service.getName().toLowerCase() + ".png")
+                            // DB에 저장된 상대 경로를 절대 경로로 변환
+                            .logoUrl(service.getSearchLogoPath() != null ? baseUrl + service.getSearchLogoPath() : null)
                             .launchDate(service.getReleaseDate())
                             .category(CategoryInfo.builder()
                                     .id(service.getCategory().getId())
                                     .name(service.getCategory().getDisplayName())
                                     .build())
-                            // 기존 tag 필드 (호환성 유지)
                             .tag(service.getTags() != null && !service.getTags().trim().isEmpty() ?
                                     service.getTags().split(",")[0].trim() : "AI 서비스")
-                            // 새로 추가: DB의 tags 컬럼 전체 내용
-                            .tags(service.getTags() != null && !service.getTags().trim().isEmpty() ?
-                                    service.getTags().trim() : "AI 서비스")
                             .pricingType(service.getPricingType().name())
                             .overallRating(service.getAverageRating())
                             .keywords(keywords)
@@ -86,4 +83,5 @@ public class ServiceListResponse {
                 .data(serviceDataList)
                 .build();
     }
+
 }
