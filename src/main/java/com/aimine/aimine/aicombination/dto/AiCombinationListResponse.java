@@ -38,12 +38,15 @@ public class AiCombinationListResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AiServiceInfo {
-        private Long id;
-        private String name;
-        private String purpose;
+        // ToolCard 표시용 필수 필드들만
+        private Long id;                // 상세 페이지 링크용
+        private String name;            // 제목
+        private String description;     // 설명
+        private String logoUrl;         // 로고 (또는 이미지 매핑용 이름)
+        private String categoryName;    // 카테고리 뱃지용
+        private String tags;            // 태그 뱃지용 (콤마 구분 문자열)
     }
 
-    // 정적 팩토리 메소드
     public static AiCombinationListResponse from(
             List<AiCombination> combinations,
             Map<Long, List<AiService>> combinationServicesMap
@@ -58,7 +61,12 @@ public class AiCombinationListResponse {
                             .map(service -> AiServiceInfo.builder()
                                     .id(service.getId())
                                     .name(service.getName())
-                                    .purpose("아이디어 브레인스토밍") // 임시 목적
+                                    .description(service.getDescription() != null ?
+                                            service.getDescription() : "AI 서비스 설명")
+                                    .logoUrl("https://logo-url.com/" +
+                                            service.getName().toLowerCase() + ".png")
+                                    .categoryName(service.getCategory().getDisplayName())
+                                    .tags(service.getTags() != null ? service.getTags() : "")
                                     .build())
                             .collect(Collectors.toList());
 
@@ -67,7 +75,7 @@ public class AiCombinationListResponse {
                             .title(combination.getName())
                             .description(combination.getDescription())
                             .category(combination.getCategory())
-                            .isFeatured(true) // 임시로 모두 featured로 설정
+                            .isFeatured(true)
                             .aiServices(aiServiceInfos)
                             .build();
                 })
