@@ -32,8 +32,8 @@ public class ServiceListResponse {
         private String logoUrl;
         private LocalDate launchDate;
         private CategoryInfo category;
-        private String tag;  // DB의 tags 컬럼의 첫 번째 태그 (기존 호환성)
-        private String tags; // DB의 tags 컬럼 전체 내용 (새로 추가)
+        private String tag;   // 기존 호환성 유지 (첫 번째 태그)
+        private String tags;  // 새로 추가 - DB의 tags 컬럼 전체 내용
         private String pricingType;
         private BigDecimal overallRating;
         private List<String> keywords;
@@ -48,7 +48,7 @@ public class ServiceListResponse {
         private String name;
     }
 
-    // 정적 팩토리 메서드 
+    // from 메서드 수정
     public static ServiceListResponse from(List<AiService> aiServices, List<List<String>> keywordsList) {
         List<ServiceData> serviceDataList = aiServices.stream()
                 .map(service -> {
@@ -58,6 +58,7 @@ public class ServiceListResponse {
                     return ServiceData.builder()
                             .id(service.getId())
                             .serviceName(service.getName())
+                            // DB의 description 필드 사용
                             .description(service.getDescription() != null ?
                                     service.getDescription() : "AI 서비스 설명")
                             .websiteUrl(service.getOfficialUrl())
