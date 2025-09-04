@@ -1,160 +1,98 @@
 package com.aimine.aimine.common.exception;
 
-import com.aimine.aimine.common.exception.errorcode.CommonErrorCode;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 
-    /**
-     * BusinessException 처리
-     */
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
-        log.warn("BusinessException occurred: {}", e.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                e.getErrorCode().getCode(),
-                e.getErrorCode().getMessage()
-        );
-
-        return ResponseEntity
-                .status(e.getErrorCode().getHttpStatus())
-                .body(errorResponse);
+    private Map<String, Object> body(String code, String msg) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("success", false);
+        map.put("code", code);
+        map.put("message", msg);
+        map.put("timestamp", OffsetDateTime.now().toString());
+        return map;
     }
 
-    /**
-     * Validation 관련 예외 처리
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.warn("Validation error occurred: {}", e.getMessage());
-
-        String message = e.getBindingResult().getFieldErrors().stream()
-                .findFirst()
-                .map(error -> error.getDefaultMessage())
-                .orElse(CommonErrorCode.INVALID_PARAMETER.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                CommonErrorCode.INVALID_PARAMETER.getCode(),
-                message
-        );
-
-        return ResponseEntity
-                .status(CommonErrorCode.INVALID_PARAMETER.getHttpStatus())
-                .body(errorResponse);
+    /** 401: 인증 실패 */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> handleAuth(AuthenticationException ex, HttpServletRequest req) {
+        log.warn("[{} {}] 401 Unauthorized: {}", req.getMethod(), req.getRequestURI(), ex.toString(), ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(body("A401", "인증이 필요합니다."));
     }
 
-    /**
-     * @RequestParam 관련 예외 처리
-     */
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        log.warn("Missing parameter error occurred: {}", e.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                CommonErrorCode.MISSING_PARAMETER.getCode(),
-                "필수 파라미터가 누락되었습니다: " + e.getParameterName()
-        );
-
-        return ResponseEntity
-                .status(CommonErrorCode.MISSING_PARAMETER.getHttpStatus())
-                .body(errorResponse);
+    /** 403: 권한 없음 */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccess(AccessDeniedException ex, HttpServletRequest req) {
+        log.warn("[{} {}] 403 Forbidden: {}", req.getMethod(), req.getRequestURI(), ex.toString(), ex);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(body("A403", "접근 권한이 없습니다."));
     }
 
-    /**
-     * HTTP Method 지원하지 않음
-     */
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        log.warn("Method not supported error occurred: {}", e.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                CommonErrorCode.INVALID_REQUEST.getCode(),
-                "지원하지 않는 HTTP 메소드입니다: " + e.getMethod()
-        );
-
-        return ResponseEntity
-                .status(CommonErrorCode.INVALID_REQUEST.getHttpStatus())
-                .body(errorResponse);
-    }
-
-    /**
-     * 타입 변환 실패
-     */
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        log.warn("Type mismatch error occurred: {}", e.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                CommonErrorCode.INVALID_PARAMETER.getCode(),
-                "잘못된 파라미터 타입입니다: " + e.getName()
-        );
-
-        return ResponseEntity
-                .status(CommonErrorCode.INVALID_PARAMETER.getHttpStatus())
-                .body(errorResponse);
-    }
-
-    /**
-     * JSON 파싱 오류
-     */
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        log.warn("JSON parsing error occurred: {}", e.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                CommonErrorCode.INVALID_REQUEST.getCode(),
-                "JSON 형식이 올바르지 않습니다."
-        );
-
-        return ResponseEntity
-                .status(CommonErrorCode.INVALID_REQUEST.getHttpStatus())
-                .body(errorResponse);
-    }
-
-    /**
-     * 404 Not Found
-     */
+    /** 404: 핸들러 없음 */
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException e) {
-        log.warn("No handler found error occurred: {}", e.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                CommonErrorCode.RESOURCE_NOT_FOUND.getCode(),
-                "요청한 리소스를 찾을 수 없습니다."
-        );
-
-        return ResponseEntity
-                .status(CommonErrorCode.RESOURCE_NOT_FOUND.getHttpStatus())
-                .body(errorResponse);
+    public ResponseEntity<?> handleNotFound(NoHandlerFoundException ex, HttpServletRequest req) {
+        log.info("[{} {}] 404 Not Found: {}", req.getMethod(), req.getRequestURI(), ex.toString(), ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(body("R404", "요청하신 경로를 찾을 수 없습니다."));
     }
 
-    /**
-     * 기타 모든 예외 처리
-     */
+    /** 400: 검증/형식 오류 */
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            MethodArgumentTypeMismatchException.class,
+            ConstraintViolationException.class
+    })
+    public ResponseEntity<?> handleBadRequest(Exception ex, HttpServletRequest req) {
+        log.info("[{} {}] 400 Bad Request: {}", req.getMethod(), req.getRequestURI(), ex.toString(), ex);
+        return ResponseEntity.badRequest()
+                .body(body("V400", "요청 형식이 올바르지 않습니다."));
+    }
+
+    /** 409: 무결성 위반 */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleConflict(DataIntegrityViolationException ex, HttpServletRequest req) {
+        log.warn("[{} {}] 409 Conflict: {}", req.getMethod(), req.getRequestURI(), ex.toString(), ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(body("D409", "데이터 무결성에 위배됩니다."));
+    }
+
+    /** 500: 그 외 모든 예외(스택 포함 로깅) */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        log.error("Unexpected error occurred", e);
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                CommonErrorCode.INTERNAL_SERVER_ERROR.getCode(),
-                CommonErrorCode.INTERNAL_SERVER_ERROR.getMessage()
-        );
-
-        return ResponseEntity
-                .status(CommonErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus())
-                .body(errorResponse);
+    public ResponseEntity<?> handleException(Exception ex, HttpServletRequest req) {
+        log.error("[{} {}] 500 Internal Server Error: {}", req.getMethod(), req.getRequestURI(), ex.toString(), ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(body("C500", "서버 내부 오류가 발생했습니다."));
     }
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<?> handleNoResource(NoResourceFoundException ex, HttpServletRequest req) {
+        log.info("[{} {}] 404 Not Found(Resource): {}", req.getMethod(), req.getRequestURI(), ex.toString(), ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(body("R404", "요청하신 리소스를 찾을 수 없습니다."));
+    }
+
 }
