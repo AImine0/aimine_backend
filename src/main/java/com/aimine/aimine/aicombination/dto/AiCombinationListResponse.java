@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,13 +39,16 @@ public class AiCombinationListResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AiServiceInfo {
-        // ToolCard 표시용 필수 필드들만
-        private Long id;                // 상세 페이지 링크용
-        private String name;            // 제목
-        private String description;     // 설명
-        private String logoUrl;         // 로고 (또는 이미지 매핑용 이름)
-        private String categoryName;    // 카테고리 뱃지용
-        private String tags;            // 태그 뱃지용 (콤마 구분 문자열)
+        private Long id;
+        private String name;
+        private String purpose; // 기존 필드 유지
+
+        private String description;    // AI 서비스 상세 설명
+        private String tags;          // DB tags 컬럼 내용 ("AI 챗봇" 등)
+        private String logoUrl;       // 로고 이미지 URL (image_path)
+        private String websiteUrl;    // 공식 웹사이트 URL
+        private BigDecimal overallRating; // 평점
+        private String categoryName;  // 카테고리명
     }
 
     public static AiCombinationListResponse from(
