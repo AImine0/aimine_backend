@@ -63,8 +63,7 @@ public class AiCombinationListResponse {
                                     .name(service.getName())
                                     .description(service.getDescription() != null ?
                                             service.getDescription() : "AI 서비스 설명")
-                                    .logoUrl("https://logo-url.com/" +
-                                            service.getName().toLowerCase() + ".png")
+                                    .logoUrl(service.getImagePath())
                                     .categoryName(service.getCategory().getDisplayName())
                                     .tags(service.getTags() != null ? service.getTags() : "")
                                     .build())
