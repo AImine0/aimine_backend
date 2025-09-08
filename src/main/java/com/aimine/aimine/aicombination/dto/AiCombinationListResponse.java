@@ -68,7 +68,7 @@ public class AiCombinationListResponse {
                                     .name(service.getName())
                                     .description(service.getDescription() != null ?
                                             service.getDescription() : "AI 서비스 설명")
-                                    .logoUrl(service.getImagePath() != null ? baseUrl + service.getImagePath() : null)
+                                    .logoUrl(service.getImagePath() != null ? baseUrl + "/" + service.getImagePath() : null)
                                     .websiteUrl(service.getOfficialUrl())
                                     .overallRating(service.getAverageRating())
                                     .categoryName(service.getCategory().getDisplayName())
