@@ -62,7 +62,6 @@ public class ServiceListResponse {
                             .serviceName(service.getName())
                             .description(service.getDescription() != null ? service.getDescription() : "AI 서비스 설명")
                             .websiteUrl(service.getOfficialUrl())
-                            // DB에 저장된 상대 경로를 절대 경로로 변환
                             .logoUrl(service.getImagePath() != null ? baseUrl + service.getImagePath() : null)
                             .launchDate(service.getReleaseDate())
                             .category(CategoryInfo.builder()
@@ -71,6 +70,7 @@ public class ServiceListResponse {
                                     .build())
                             .tag(service.getTags() != null && !service.getTags().trim().isEmpty() ?
                                     service.getTags().split(",")[0].trim() : "AI 서비스")
+                            .tags(service.getTags())
                             .pricingType(service.getPricingType().name())
                             .overallRating(service.getAverageRating())
                             .keywords(keywords)
