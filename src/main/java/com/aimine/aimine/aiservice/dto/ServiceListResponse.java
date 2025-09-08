@@ -50,7 +50,7 @@ public class ServiceListResponse {
 
     // from 메서드 수정
     public static ServiceListResponse from(List<AiService> aiServices, List<List<String>> keywordsList) {
-        String baseUrl = "https://aimine-api-production.up.railway.app"; // API 서버 주소 (환경에 맞게 수정)
+        String baseUrl = "https://aimine.up.railway.app"; // API 서버 주소 (환경에 맞게 수정)
 
         List<ServiceData> serviceDataList = aiServices.stream()
                 .map(service -> {
@@ -66,7 +66,7 @@ public class ServiceListResponse {
                             .launchDate(service.getReleaseDate())
                             .category(CategoryInfo.builder()
                                     .id(service.getCategory().getId())
-                                    .name(service.getCategory().getDisplayName())
+                                    .name(service.getCategory().getName())
                                     .build())
                             .tag(service.getTags() != null && !service.getTags().trim().isEmpty() ?
                                     service.getTags().split(",")[0].trim() : "AI 서비스")
