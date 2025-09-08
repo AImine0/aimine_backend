@@ -55,6 +55,7 @@ public class AiCombinationListResponse {
             List<AiCombination> combinations,
             Map<Long, List<AiService>> combinationServicesMap
     ) {
+        String baseUrl = "https://aimine.up.railway.app"; // API 서버 주소
         List<CombinationInfo> combinationInfos = combinations.stream()
                 .map(combination -> {
                     List<AiService> aiServices = combinationServicesMap.getOrDefault(
@@ -67,7 +68,9 @@ public class AiCombinationListResponse {
                                     .name(service.getName())
                                     .description(service.getDescription() != null ?
                                             service.getDescription() : "AI 서비스 설명")
-                                    .logoUrl(service.getImagePath())
+                                    .logoUrl(service.getImagePath() != null ? baseUrl + service.getImagePath() : null)
+                                    .websiteUrl(service.getOfficialUrl())
+                                    .overallRating(service.getAverageRating())
                                     .categoryName(service.getCategory().getDisplayName())
                                     .tags(service.getTags() != null ? service.getTags() : "")
                                     .build())
@@ -89,4 +92,6 @@ public class AiCombinationListResponse {
                 .totalCount(combinationInfos.size())
                 .build();
     }
+
+
 }
