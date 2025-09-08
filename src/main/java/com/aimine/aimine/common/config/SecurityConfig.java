@@ -40,7 +40,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 프리플라이트 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
                         .requestMatchers("/images/**", "/static/**").permitAll()
 
                         // 공개 엔드포인트
@@ -53,18 +52,20 @@ public class SecurityConfig {
                         .requestMatchers("/keywords/**").permitAll()
                         .requestMatchers("/ai-combinations/**").permitAll()
 
+
                         // 리뷰 관련: 조회는 공개, 작성/삭제는 인증 필요
-                        .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/reviews/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/reviews/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()      // 리뷰 조회 - 공개
+                        .requestMatchers(HttpMethod.POST, "/reviews/**").authenticated() // 리뷰 작성 - 인증 필요
+                        .requestMatchers(HttpMethod.DELETE, "/reviews/**").authenticated() // 리뷰 삭제 - 인증 필요
 
                         // OAuth2 관련 엔드포인트 허용
                         .requestMatchers("/oauth2/authorization/**").permitAll()
                         .requestMatchers("/login/oauth2/code/**").permitAll()
 
                         // 인증이 필요한 엔드포인트
+
                         .requestMatchers("/auth/me", "/auth/logout").authenticated()
-                        .requestMatchers("/bookmarks/**").authenticated()
+                        .requestMatchers("/bookmarks/**").authenticated() // 북마크는 모든 작업에 인증 필요
 
                         .anyRequest().authenticated()
                 )
