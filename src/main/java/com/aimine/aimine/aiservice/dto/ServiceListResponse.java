@@ -63,7 +63,7 @@ public class ServiceListResponse {
                             .description(service.getDescription() != null ? service.getDescription() : "AI 서비스 설명")
                             .websiteUrl(service.getOfficialUrl())
                             // DB에 저장된 상대 경로를 절대 경로로 변환
-                            .logoUrl(service.getSearchLogoPath() != null ? baseUrl + service.getSearchLogoPath() : null)
+                            .logoUrl(service.getImagePath() != null ? baseUrl + service.getImagePath() : null)
                             .launchDate(service.getReleaseDate())
                             .category(CategoryInfo.builder()
                                     .id(service.getCategory().getId())
