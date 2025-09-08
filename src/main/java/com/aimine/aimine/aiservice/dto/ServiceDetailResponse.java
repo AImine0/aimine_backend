@@ -82,7 +82,7 @@ public class ServiceDetailResponse {
 
     // 정적 팩토리 메소드
     public static ServiceDetailResponse from(AiService aiService, List<Keyword> keywords, List<Review> reviews) {
-        String baseUrl = "https://aimine-api-production.up.railway.app"; // API 서버 주소
+        String baseUrl = "https://aimine.up.railway.app"; // API 서버 주소
 
         List<KeywordInfo> keywordInfos = keywords.stream()
                 .map(keyword -> KeywordInfo.builder()
@@ -113,7 +113,7 @@ public class ServiceDetailResponse {
                 .launchDate(aiService.getReleaseDate())
                 .category(CategoryInfo.builder()
                         .id(aiService.getCategory().getId())
-                        .name(aiService.getCategory().getDisplayName())
+                        .name(aiService.getCategory().getName())
                         .build())
                 .pricingType(aiService.getPricingType().name())
                 .overallRating(aiService.getAverageRating())
