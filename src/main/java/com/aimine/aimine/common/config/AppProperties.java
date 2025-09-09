@@ -25,6 +25,12 @@ public class AppProperties {
         String origin = request.getHeader("Origin");
         String referer = request.getHeader("Referer");
 
+        // 임시 디버깅 (System.out은 Railway 콘솔에서 확인 가능)
+        System.out.println("=== OAuth 헤더 디버깅 ===");
+        System.out.println("Host: " + host);
+        System.out.println("Origin: " + origin);
+        System.out.println("Referer: " + referer);
+        System.out.println("========================");
 
         // Origin이나 Referer에서 localhost 확인
         boolean isFromLocalhost = false;
@@ -35,9 +41,11 @@ public class AppProperties {
         }
 
         if (isFromLocalhost) {
+            System.out.println(">>> localhost로 리다이렉트");
             return "http://localhost:3000";
         }
 
+        System.out.println(">>> vercel로 리다이렉트: " + frontend.getUrl());
         return frontend.getUrl();
     }
 }
