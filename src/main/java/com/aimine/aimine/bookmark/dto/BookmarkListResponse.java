@@ -30,26 +30,33 @@ public class BookmarkListResponse {
         private String logoUrl;
         private String categoryDisplayName;
         private String pricingType;
+        private String tags; // tags 필드 추가
     }
 
-    // 정적 팩토리 메소드 - 수정된 버전
+    // 정적 팩토리 메소드 - 완전히 수정된 버전
     public static BookmarkListResponse from(List<Bookmark> bookmarks) {
         List<BookmarkInfo> bookmarkInfos = bookmarks.stream()
-                .map(bookmark -> BookmarkInfo.builder()
-                        .id(bookmark.getId())
-                        .aiServiceId(bookmark.getAiService().getId())
-                        .serviceName(bookmark.getAiService().getName())
-                        // 수정: 실제 description 필드 사용
-                        .serviceSummary(bookmark.getAiService().getDescription() != null ?
-                                bookmark.getAiService().getDescription() :
-                                bookmark.getAiService().getName() + " AI 서비스")
-                        // 수정: imagePath 필드 사용 (AiService의 실제 로고 필드)
-                        .logoUrl(bookmark.getAiService().getImagePath() != null ?
-                                bookmark.getAiService().getImagePath() :
-                                "/images/Logo/Logo_FINAL.svg") // 기본 로고
-                        .categoryDisplayName(bookmark.getAiService().getCategory().getDisplayName())
-                        .pricingType(bookmark.getAiService().getPricingType().name())
-                        .build())
+                .map(bookmark -> {
+                    String tags = bookmark.getAiService().getTags();
+                    if (tags == null || tags.trim().isEmpty()) {
+                        tags = bookmark.getAiService().getCategory().getDisplayName();
+                    }
+
+                    return BookmarkInfo.builder()
+                            .id(bookmark.getId())
+                            .aiServiceId(bookmark.getAiService().getId())
+                            .serviceName(bookmark.getAiService().getName())
+                            .serviceSummary(bookmark.getAiService().getDescription() != null ?
+                                    bookmark.getAiService().getDescription() :
+                                    bookmark.getAiService().getName() + " AI 서비스")
+                            .logoUrl(bookmark.getAiService().getImagePath() != null ?
+                                    bookmark.getAiService().getImagePath() :
+                                    "/images/Logo/Logo_FINAL.svg")
+                            .categoryDisplayName(bookmark.getAiService().getCategory().getDisplayName())
+                            .pricingType(bookmark.getAiService().getPricingType().name())
+                            .tags(tags)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return BookmarkListResponse.builder()
