@@ -1,0 +1,20 @@
+# VCS / IDE
+.git
+.gitignore
+.idea
+.vscode
+*.iml
+
+# Gradle / Build outputs
+.gradle
+build
+out
+**/target
+
+# Node 등(있다면)
+node_modules
+*.log
+
+# 환경파일
+.env
+**/.env
