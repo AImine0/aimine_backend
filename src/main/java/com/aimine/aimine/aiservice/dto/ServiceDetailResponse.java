@@ -33,6 +33,8 @@ public class ServiceDetailResponse {
         private String description;
         private String websiteUrl;
         private String logoUrl;
+        private String serviceImageUrl;    // 서비스 상세 이미지
+        private String priceImageUrl;      // 가격 정보 이미지
         private LocalDate launchDate;
         private CategoryInfo category;
         private String pricingType;
@@ -125,6 +127,9 @@ public class ServiceDetailResponse {
                 // 모든 이미지 경로에 baseUrl 적용 - 우선순위에 따라 선택
                 .logoUrl(buildImageUrl(baseUrl,
                         aiService.getSearchLogoPath() != null ? aiService.getSearchLogoPath() : aiService.getImagePath()))
+                // 서비스 상세 이미지와 가격 정보 이미지 추가
+                .serviceImageUrl(buildImageUrl(baseUrl, aiService.getServiceImagePath()))
+                .priceImageUrl(buildImageUrl(baseUrl, aiService.getPricingImagePath()))
                 .launchDate(aiService.getReleaseDate())
                 .category(CategoryInfo.builder()
                         .id(aiService.getCategory().getId())
