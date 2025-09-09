@@ -51,6 +51,19 @@ public class AiCombinationListResponse {
         private String categoryName;  // 카테고리명
     }
 
+    // 이미지 URL을 안전하게 생성하는 헬퍼 메서드 추가
+    private static String buildImageUrl(String baseUrl, String imagePath) {
+        if (imagePath == null || imagePath.trim().isEmpty()) {
+            return null;
+        }
+        // 이미 완전한 URL인 경우 그대로 반환
+        if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+            return imagePath;
+        }
+        // 상대 경로인 경우 baseUrl 추가
+        return baseUrl + (imagePath.startsWith("/") ? imagePath : "/" + imagePath);
+    }
+
     public static AiCombinationListResponse from(
             List<AiCombination> combinations,
             Map<Long, List<AiService>> combinationServicesMap
@@ -68,7 +81,8 @@ public class AiCombinationListResponse {
                                     .name(service.getName())
                                     .description(service.getDescription() != null ?
                                             service.getDescription() : "AI 서비스 설명")
-                                    .logoUrl(service.getImagePath() != null ? baseUrl + "/" + service.getImagePath() : null)
+                                    // 🔧 이 부분만 수정: buildImageUrl 헬퍼 메서드 사용
+                                    .logoUrl(buildImageUrl(baseUrl, service.getImagePath()))
                                     .websiteUrl(service.getOfficialUrl())
                                     .overallRating(service.getAverageRating())
                                     .categoryName(service.getCategory().getDisplayName())
@@ -92,6 +106,4 @@ public class AiCombinationListResponse {
                 .totalCount(combinationInfos.size())
                 .build();
     }
-
-
 }
