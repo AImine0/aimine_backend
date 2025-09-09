@@ -22,9 +22,22 @@ public class AppProperties {
 
     public String getFrontendUrl(HttpServletRequest request) {
         String host = request.getHeader("Host");
-        if (host != null && (host.contains("localhost") || host.contains("127.0.0.1"))) {
+        String origin = request.getHeader("Origin");
+        String referer = request.getHeader("Referer");
+
+
+        // Origin이나 Referer에서 localhost 확인
+        boolean isFromLocalhost = false;
+        if (origin != null && (origin.contains("localhost") || origin.contains("127.0.0.1"))) {
+            isFromLocalhost = true;
+        } else if (referer != null && (referer.contains("localhost") || referer.contains("127.0.0.1"))) {
+            isFromLocalhost = true;
+        }
+
+        if (isFromLocalhost) {
             return "http://localhost:3000";
         }
+
         return frontend.getUrl();
     }
 }
