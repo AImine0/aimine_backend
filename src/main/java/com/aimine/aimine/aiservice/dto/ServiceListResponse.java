@@ -48,9 +48,22 @@ public class ServiceListResponse {
         private String name;
     }
 
+    // 이미지 URL을 안전하게 생성하는 헬퍼 메서드
+    private static String buildImageUrl(String baseUrl, String imagePath) {
+        if (imagePath == null || imagePath.trim().isEmpty()) {
+            return null;
+        }
+        // 이미 완전한 URL인 경우 그대로 반환
+        if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+            return imagePath;
+        }
+        // 상대 경로인 경우 baseUrl 추가
+        return baseUrl + (imagePath.startsWith("/") ? imagePath : "/" + imagePath);
+    }
+
     // from 메서드 수정
     public static ServiceListResponse from(List<AiService> aiServices, List<List<String>> keywordsList) {
-        String baseUrl = "https://aimine.up.railway.app"; // API 서버 주소 (환경에 맞게 수정)
+        String baseUrl = "https://aimine.up.railway.app"; // API 서버 주소
 
         List<ServiceData> serviceDataList = aiServices.stream()
                 .map(service -> {
@@ -62,7 +75,8 @@ public class ServiceListResponse {
                             .serviceName(service.getName())
                             .description(service.getDescription() != null ? service.getDescription() : "AI 서비스 설명")
                             .websiteUrl(service.getOfficialUrl())
-                            .logoUrl(service.getImagePath() != null ? baseUrl + service.getImagePath() : null)
+                            // 모든 이미지 경로에 baseUrl 적용
+                            .logoUrl(buildImageUrl(baseUrl, service.getImagePath()))
                             .launchDate(service.getReleaseDate())
                             .category(CategoryInfo.builder()
                                     .id(service.getCategory().getId())
@@ -83,5 +97,4 @@ public class ServiceListResponse {
                 .data(serviceDataList)
                 .build();
     }
-
 }

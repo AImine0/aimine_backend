@@ -80,7 +80,20 @@ public class ServiceDetailResponse {
         private String nickname;
     }
 
-    // 정적 팩토리 메소드
+    // 이미지 URL을 안전하게 생성하는 헬퍼 메서드
+    private static String buildImageUrl(String baseUrl, String imagePath) {
+        if (imagePath == null || imagePath.trim().isEmpty()) {
+            return null;
+        }
+        // 이미 완전한 URL인 경우 그대로 반환
+        if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+            return imagePath;
+        }
+        // 상대 경로인 경우 baseUrl 추가
+        return baseUrl + (imagePath.startsWith("/") ? imagePath : "/" + imagePath);
+    }
+
+    // 정적 팩토리 메서드
     public static ServiceDetailResponse from(AiService aiService, List<Keyword> keywords, List<Review> reviews) {
         String baseUrl = "https://aimine.up.railway.app"; // API 서버 주소
 
@@ -109,7 +122,9 @@ public class ServiceDetailResponse {
                 .serviceName(aiService.getName())
                 .description(aiService.getDescription() != null ? aiService.getDescription() : "AI 서비스 상세 설명")
                 .websiteUrl(aiService.getOfficialUrl())
-                .logoUrl(aiService.getSearchLogoPath() != null ? baseUrl + aiService.getSearchLogoPath() : null)
+                // 모든 이미지 경로에 baseUrl 적용 - 우선순위에 따라 선택
+                .logoUrl(buildImageUrl(baseUrl,
+                        aiService.getSearchLogoPath() != null ? aiService.getSearchLogoPath() : aiService.getImagePath()))
                 .launchDate(aiService.getReleaseDate())
                 .category(CategoryInfo.builder()
                         .id(aiService.getCategory().getId())
@@ -126,5 +141,4 @@ public class ServiceDetailResponse {
                 .data(data)
                 .build();
     }
-
 }

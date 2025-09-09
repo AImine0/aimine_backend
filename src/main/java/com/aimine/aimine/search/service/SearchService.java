@@ -155,23 +155,40 @@ public class SearchService {
     }
 
     /**
-     * AiService를 AiServiceInfo로 변환
+     * 이미지 URL을 안전하게 생성하는 헬퍼 메서드
      */
-    /**
-     * AiService를 AiServiceInfo로 변환
-     */
+    private String buildImageUrl(String baseUrl, String imagePath) {
+        if (imagePath == null || imagePath.trim().isEmpty()) {
+            return baseUrl + "/images/Logo/Logo_FINAL.svg"; // 기본 이미지도 전체 URL로
+        }
+        // 이미 완전한 URL인 경우 그대로 반환
+        if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+            return imagePath;
+        }
+        // 상대 경로인 경우 baseUrl 추가
+        return baseUrl + (imagePath.startsWith("/") ? imagePath : "/" + imagePath);
+    }
+
     /**
      * AiService를 AiServiceInfo로 변환
      */
     private SearchResponse.AiServiceInfo convertToAiServiceInfo(AiService aiService) {
-        // 임시로 빈 키워드 리스트 사용 (나중에 실제 데이터로 대체)
-        List<String> keywords = List.of("텍스트 생성", "대화", "AI 어시스턴트");
+        String baseUrl = "https://aimine.up.railway.app"; // API 서버 주소
+
+        // 해당 서비스의 키워드 조회 (실제 데이터 사용)
+        List<String> keywords = aiServiceKeywordRepository.findKeywordsByAiService(aiService)
+                .stream()
+                .map(keyword -> keyword.getName())
+                .limit(5) // 최대 5개까지만
+                .collect(Collectors.toList());
 
         return SearchResponse.AiServiceInfo.builder()
                 .id(aiService.getId())
                 .serviceName(aiService.getName())
-                .description("AI 서비스 설명")
-                .logoUrl("https://example.com/logo.png")
+                .description(aiService.getDescription() != null ?
+                        aiService.getDescription() : aiService.getName() + " AI 서비스")
+                // 백엔드 도메인을 포함한 전체 URL로 반환
+                .logoUrl(buildImageUrl(baseUrl, aiService.getImagePath()))
                 .categoryName(aiService.getCategory().getDisplayName())
                 .pricingType(aiService.getPricingType().name().toLowerCase())
                 .overallRating(aiService.getAverageRating())
