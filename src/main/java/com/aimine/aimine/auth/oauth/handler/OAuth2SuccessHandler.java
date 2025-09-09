@@ -72,7 +72,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } catch (Exception e) {
             log.error("OAuth2 성공 처리 중 오류 발생", e);
 
-            String frontendUrl = appProperties.getFrontend().getUrl();
+            String host = request.getHeader("Host");
+            String frontendUrl;
+            if (host != null && (host.contains("localhost") || host.contains("127.0.0.1"))) {
+                frontendUrl = "http://localhost:3000";
+            } else {
+                frontendUrl = appProperties.getFrontend().getUrl(); // vercel URL
+            }
             String errorUrl = frontendUrl + "/auth/error";
             getRedirectStrategy().sendRedirect(request, response, errorUrl);
         }
