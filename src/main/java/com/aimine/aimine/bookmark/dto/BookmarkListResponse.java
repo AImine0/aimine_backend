@@ -30,10 +30,11 @@ public class BookmarkListResponse {
         private String logoUrl;
         private String categoryDisplayName;
         private String pricingType;
-        private String tags; // tags 필드 추가
+        private String tags;
+        private String websiteUrl; 
     }
 
-    // 정적 팩토리 메소드 - 완전히 수정된 버전
+    // 정적 팩토리 메소드 - officialUrl을 websiteUrl로 매핑
     public static BookmarkListResponse from(List<Bookmark> bookmarks) {
         List<BookmarkInfo> bookmarkInfos = bookmarks.stream()
                 .map(bookmark -> {
@@ -55,6 +56,7 @@ public class BookmarkListResponse {
                             .categoryDisplayName(bookmark.getAiService().getCategory().getDisplayName())
                             .pricingType(bookmark.getAiService().getPricingType().name())
                             .tags(tags)
+                            .websiteUrl(bookmark.getAiService().getOfficialUrl())
                             .build();
                 })
                 .collect(Collectors.toList());
