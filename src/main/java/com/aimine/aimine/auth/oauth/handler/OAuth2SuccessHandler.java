@@ -59,8 +59,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             // Refresh Token 저장
             refreshTokenService.saveRefreshToken(user.getId(), refreshToken);
 
-            // 환경에 따른 프론트엔드 URL로 리다이렉트 (토큰과 함께)
-            String frontendUrl = appProperties.getFrontend().getUrl();
+            // 수정된 부분: 동적 프론트엔드 URL 결정
+            String frontendUrl = appProperties.getFrontendUrl(request);
             String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/auth/callback")
                     .queryParam("accessToken", accessToken)
                     .queryParam("refreshToken", refreshToken)
@@ -72,13 +72,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } catch (Exception e) {
             log.error("OAuth2 성공 처리 중 오류 발생", e);
 
-            String host = request.getHeader("Host");
-            String frontendUrl;
-            if (host != null && (host.contains("localhost") || host.contains("127.0.0.1"))) {
-                frontendUrl = "http://localhost:3000";
-            } else {
-                frontendUrl = appProperties.getFrontend().getUrl(); // vercel URL
-            }
+            // 수정된 부분: 동일한 로직 사용
+            String frontendUrl = appProperties.getFrontendUrl(request);
             String errorUrl = frontendUrl + "/auth/error";
             getRedirectStrategy().sendRedirect(request, response, errorUrl);
         }
