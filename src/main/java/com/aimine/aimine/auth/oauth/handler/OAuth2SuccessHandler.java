@@ -2,6 +2,7 @@ package com.aimine.aimine.auth.oauth.handler;
 
 import com.aimine.aimine.auth.oauth.dto.OAuthUserInfo;
 import com.aimine.aimine.auth.oauth.dto.OAuthUserInfoFactory;
+import com.aimine.aimine.common.config.AppProperties;
 import com.aimine.aimine.security.jwt.JwtTokenProvider;
 import com.aimine.aimine.security.service.RefreshTokenService;
 import com.aimine.aimine.user.domain.User;
@@ -26,6 +27,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
+    private final AppProperties appProperties;
 
     @Override
     public void onAuthenticationSuccess(
@@ -57,18 +59,22 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             // Refresh Token 저장
             refreshTokenService.saveRefreshToken(user.getId(), refreshToken);
 
-            // 프론트엔드로 리다이렉트 (토큰과 함께)
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/auth/callback")
+            // 환경에 따른 프론트엔드 URL로 리다이렉트 (토큰과 함께)
+            String frontendUrl = appProperties.getFrontend().getUrl();
+            String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/auth/callback")
                     .queryParam("accessToken", accessToken)
                     .queryParam("refreshToken", refreshToken)
                     .build().toUriString();
 
-            log.info("OAuth2 로그인 성공, 리다이렉트: {}", targetUrl);
+            log.info("OAuth2 로그인 성공, 리다이렉트: {} -> {}", frontendUrl, targetUrl);
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
         } catch (Exception e) {
             log.error("OAuth2 성공 처리 중 오류 발생", e);
-            getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000/auth/error");
+
+            String frontendUrl = appProperties.getFrontend().getUrl();
+            String errorUrl = frontendUrl + "/auth/error";
+            getRedirectStrategy().sendRedirect(request, response, errorUrl);
         }
     }
 }
