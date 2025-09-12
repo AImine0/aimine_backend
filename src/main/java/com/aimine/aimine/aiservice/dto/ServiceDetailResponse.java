@@ -39,6 +39,7 @@ public class ServiceDetailResponse {
         private CategoryInfo category;
         private String pricingType;
         private BigDecimal overallRating;
+        private BigDecimal recommendationScore;
         private List<KeywordInfo> keywords;
         private List<ReviewInfo> reviews;
     }
@@ -137,6 +138,7 @@ public class ServiceDetailResponse {
                         .build())
                 .pricingType(aiService.getPricingType().name())
                 .overallRating(aiService.getAverageRating())
+                .recommendationScore(aiService.getRecommendationScore())
                 .keywords(keywordInfos)
                 .reviews(reviewInfos)
                 .build();
