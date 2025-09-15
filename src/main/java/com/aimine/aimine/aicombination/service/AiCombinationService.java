@@ -37,7 +37,7 @@ public class AiCombinationService {
         log.debug("AI 조합 목록 조회 요청: category={}, featured={}", category, featured);
 
         // 페이징 설정 (기본적으로 20개씩 조회)
-        Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.ASC, "id"));
+        Pageable pageable = PageRequest.of(0, 50, Sort.by(Sort.Direction.ASC, "id"));
 
         Page<AiCombination> combinationsPage;
 
