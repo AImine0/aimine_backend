@@ -150,4 +150,31 @@ public interface AiServiceRepository extends JpaRepository<AiService, Long> {
             "WHERE a.recommendationRank IS NOT NULL " +
             "ORDER BY a.recommendationRank ASC")
     Page<AiService> findTopRecommendedWithCategory(Pageable pageable);
+
+    // 카테고리 이름에 검색어가 포함된 AI 서비스 검색
+    @Query("SELECT DISTINCT a FROM AiService a " +
+            "LEFT JOIN FETCH a.category c " +
+            "WHERE LOWER(c.displayName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    List<AiService> findByCategoryDisplayNameContainingIgnoreCase(@Param("searchTerm") String searchTerm);
+
+    // 카테고리 이름 + 가격 타입 필터링
+    @Query("SELECT DISTINCT a FROM AiService a " +
+            "LEFT JOIN FETCH a.category c " +
+            "WHERE LOWER(c.displayName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "AND a.pricingType = :pricingType")
+    List<AiService> findByCategoryDisplayNameContainingIgnoreCaseAndPricingType(
+            @Param("searchTerm") String searchTerm,
+            @Param("pricingType") AiService.PricingType pricingType);
+
+    // AI 조합의 카테고리에 검색어가 포함된 AI 서비스 검색
+    @Query("SELECT DISTINCT a FROM AiService a " +
+            "JOIN AiCombinationService acs ON a.id = acs.aiService.id " +
+            "JOIN AiCombination ac ON acs.combination.id = ac.id " +
+            "WHERE LOWER(ac.category) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    List<AiService> findByAiCombinationCategoryContainingIgnoreCase(@Param("searchTerm") String searchTerm);
+
+    // 여러 키워드 ID에 해당하는 AI 서비스들 검색 (AiServiceKeywordRepository 대신 사용)
+    @Query("SELECT DISTINCT ask.aiService FROM AiServiceKeyword ask " +
+            "WHERE ask.keyword.id IN :keywordIds")
+    List<AiService> findAiServicesByKeywordIds(@Param("keywordIds") List<Long> keywordIds);
 }
