@@ -2,6 +2,7 @@ package com.aimine.aimine.search.controller;
 
 import com.aimine.aimine.search.dto.SearchResponse;
 import com.aimine.aimine.search.dto.SearchHistoryResponse;
+import com.aimine.aimine.search.dto.SearchSuggestionsResponse;
 import com.aimine.aimine.search.service.SearchService;
 import com.aimine.aimine.search.service.SearchHistoryService;
 import com.aimine.aimine.security.jwt.JwtTokenProvider;
@@ -145,6 +146,23 @@ public class SearchController {
         log.info("모든 검색어 이력 삭제 완료 - userId: {}", userId);
 
         return ResponseEntity.ok(SearchHistoryResponse.success("모든 검색어 이력이 삭제되었습니다."));
+    }
+
+    /**
+     * 실시간 연관검색어 조회 (새로 추가)
+     */
+    @GetMapping("/suggestions")
+    @Operation(summary = "실시간 연관검색어", description = "입력된 검색어에 대한 실시간 연관검색어를 제공합니다.")
+    public ResponseEntity<SearchSuggestionsResponse> getSearchSuggestions(
+            @Parameter(description = "검색어", example = "Chat")
+            @RequestParam String q,
+            @Parameter(description = "최대 결과 수", example = "10")
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        log.info("실시간 연관검색어 요청 - q: {}, limit: {}", q, limit);
+
+        SearchSuggestionsResponse suggestions = searchService.getSearchSuggestions(q, limit);
+        return ResponseEntity.ok(suggestions);
     }
 
     /**

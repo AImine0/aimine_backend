@@ -6,6 +6,8 @@ import com.aimine.aimine.keyword.domain.AiServiceKeyword;
 import com.aimine.aimine.keyword.repository.AiServiceKeywordRepository;
 import com.aimine.aimine.keyword.repository.KeywordRepository;
 import com.aimine.aimine.search.dto.SearchResponse;
+import com.aimine.aimine.search.dto.SearchSuggestion;
+import com.aimine.aimine.search.dto.SearchSuggestionsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -81,6 +83,171 @@ public class SearchService {
                 .tools(tools)
                 .suggestedKeywords(suggestedKeywords)
                 .build();
+    }
+
+    /**
+     * 실시간 연관검색어 조회 (새로 추가)
+     */
+    public SearchSuggestionsResponse getSearchSuggestions(String query, int limit) {
+        if (!StringUtils.hasText(query) || query.trim().length() < 1) {
+            return SearchSuggestionsResponse.builder()
+                    .suggestions(List.of())
+                    .build();
+        }
+
+        String searchTerm = query.toLowerCase().trim();
+        List<SearchSuggestion> suggestions = new ArrayList<>();
+
+        // 우선순위 1: 기능별/직업별 카테고리 (AI 조합에서)
+        List<SearchSuggestion> categorySuggestions = findCategorySuggestions(searchTerm);
+        suggestions.addAll(categorySuggestions);
+
+        // 우선순위 2: AI 서비스명
+        List<SearchSuggestion> serviceSuggestions = findServiceSuggestions(searchTerm);
+        suggestions.addAll(serviceSuggestions);
+
+        // 우선순위 3: 키워드와 카테고리 displayName
+        List<SearchSuggestion> keywordSuggestions = findKeywordSuggestions(searchTerm);
+        suggestions.addAll(keywordSuggestions);
+
+        // 중복 제거 및 제한
+        return SearchSuggestionsResponse.builder()
+                .suggestions(suggestions.stream()
+                        .distinct()
+                        .limit(limit)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    /**
+     * 기능별/직업별 카테고리 연관검색어 조회 (우선순위 1)
+     */
+    private List<SearchSuggestion> findCategorySuggestions(String searchTerm) {
+        List<SearchSuggestion> suggestions = new ArrayList<>();
+
+        try {
+            // AI 조합의 카테고리에서 검색어가 포함된 항목들 찾기
+            List<AiService> categoryServices = aiServiceRepository.findByAiCombinationCategoryContainingIgnoreCase(searchTerm);
+
+            // 카테고리별로 그룹화하여 중복 제거
+            Set<String> categoryPaths = categoryServices.stream()
+                    .map(service -> {
+                        // AI 조합에서 카테고리 경로 생성 로직
+                        // 실제로는 AiCombination 엔티티에서 category 정보를 가져와야 함
+                        return "홈 > 직업별 > " + extractCategoryFromService(service);
+                    })
+                    .collect(Collectors.toSet());
+
+            // 최대 3개까지만 반환
+            categoryPaths.stream()
+                    .limit(3)
+                    .forEach(categoryPath -> {
+                        suggestions.add(SearchSuggestion.builder()
+                                .type(SearchSuggestion.SuggestionType.CATEGORY)
+                                .text(extractCategoryName(categoryPath))
+                                .categoryPath(categoryPath)
+                                .build());
+                    });
+
+        } catch (Exception e) {
+            log.warn("카테고리 연관검색어 조회 실패: {}", e.getMessage());
+        }
+
+        return suggestions;
+    }
+
+    /**
+     * AI 서비스명 연관검색어 조회 (우선순위 2)
+     */
+    private List<SearchSuggestion> findServiceSuggestions(String searchTerm) {
+        List<SearchSuggestion> suggestions = new ArrayList<>();
+
+        try {
+            // AI 서비스명에서 검색어가 포함된 서비스들 조회 (최대 5개)
+            Page<AiService> services = aiServiceRepository.findByNameContainingIgnoreCase(
+                    searchTerm, PageRequest.of(0, 5));
+
+            services.getContent().forEach(service -> {
+                suggestions.add(SearchSuggestion.builder()
+                        .type(SearchSuggestion.SuggestionType.AI_SERVICE)
+                        .id(service.getId())
+                        .text(service.getName())
+                        .logoUrl(buildImageUrl("https://aimine.up.railway.app", service.getImagePath()))
+                        .tag(service.getCategory().getDisplayName())
+                        .build());
+            });
+
+        } catch (Exception e) {
+            log.warn("AI 서비스 연관검색어 조회 실패: {}", e.getMessage());
+        }
+
+        return suggestions;
+    }
+
+    /**
+     * 키워드 및 카테고리 연관검색어 조회 (우선순위 3)
+     */
+    private List<SearchSuggestion> findKeywordSuggestions(String searchTerm) {
+        List<SearchSuggestion> suggestions = new ArrayList<>();
+
+        try {
+            // 1. 기능 키워드에서 검색
+            List<String> keywordNames = keywordRepository.findByNameContainingIgnoreCase(searchTerm)
+                    .stream()
+                    .map(keyword -> keyword.getName())
+                    .limit(3)
+                    .collect(Collectors.toList());
+
+            keywordNames.forEach(keywordName -> {
+                suggestions.add(SearchSuggestion.builder()
+                        .type(SearchSuggestion.SuggestionType.KEYWORD)
+                        .text(keywordName)
+                        .build());
+            });
+
+            // 2. AI 카테고리 displayName에서 검색
+            List<AiService> categoryServices = aiServiceRepository.findByCategoryDisplayNameContainingIgnoreCase(searchTerm);
+
+            // 카테고리별로 그룹화하여 중복 제거
+            Set<String> categoryNames = categoryServices.stream()
+                    .map(service -> service.getCategory().getDisplayName())
+                    .collect(Collectors.toSet());
+
+            // 최대 2개까지만 추가
+            categoryNames.stream()
+                    .limit(2)
+                    .forEach(categoryName -> {
+                        suggestions.add(SearchSuggestion.builder()
+                                .type(SearchSuggestion.SuggestionType.KEYWORD)
+                                .text(categoryName)
+                                .build());
+                    });
+
+        } catch (Exception e) {
+            log.warn("키워드 연관검색어 조회 실패: {}", e.getMessage());
+        }
+
+        return suggestions;
+    }
+
+    /**
+     * 서비스에서 카테고리명 추출 (헬퍼 메서드)
+     */
+    private String extractCategoryFromService(AiService service) {
+        // AI 조합 카테고리 정보가 필요하지만, 현재는 서비스의 카테고리 사용
+        return service.getCategory().getDisplayName();
+    }
+
+    /**
+     * 카테고리 경로에서 카테고리명만 추출 (헬퍼 메서드)
+     */
+    private String extractCategoryName(String categoryPath) {
+        // "홈 > 직업별 > 디자인" → "디자인"
+        if (categoryPath.contains(" > ")) {
+            String[] parts = categoryPath.split(" > ");
+            return parts[parts.length - 1];
+        }
+        return categoryPath;
     }
 
     /**
