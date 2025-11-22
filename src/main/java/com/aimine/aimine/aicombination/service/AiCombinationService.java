@@ -67,19 +67,28 @@ public class AiCombinationService {
     /**
      * AI 조합 상세 조회
      */
-    public AiCombinationDetailResponse getAiCombinationDetail(Long combinationId) {
-        log.debug("AI 조합 상세 조회 요청: combinationId={}", combinationId);
-
-        // AI 조합 조회
-        AiCombination combination = aiCombinationRepository.findById(combinationId)
-                .orElseThrow(() -> new BusinessException(AiServiceErrorCode.AI_COMBINATION_NOT_FOUND));
-
-        // 조합에 포함된 AI 서비스 목록 조회
-        List<AiService> aiServices = aiCombinationServiceRepository.findAiServicesByCombination(combination);
-
-        return AiCombinationDetailResponse.from(combination, aiServices);
+    public AiCombinationListResponse getAiCombinations(String category, Boolean featured) {
+        log.debug("AI 조합 목록 조회 요청: category={}, featured={}", category, featured);
+    
+        List<AiCombination> combinations;
+    
+        if (category != null && !category.trim().isEmpty()) {
+            // 카테고리별 조회 (페이징 없이)
+            combinations = aiCombinationRepository.findByCategory(category, Sort.by(Sort.Direction.ASC, "id")).getContent();
+        } else {
+            // 전체 조회 (페이징 없이)
+            combinations = aiCombinationRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+        }
+    
+        // 각 조합별 AI 서비스 목록 조회
+        Map<Long, List<AiService>> combinationServicesMap = new HashMap<>();
+        for (AiCombination combination : combinations) {
+            List<AiService> services = aiCombinationServiceRepository.findAiServicesByCombination(combination);
+            combinationServicesMap.put(combination.getId(), services);
+        }
+    
+        return AiCombinationListResponse.from(combinations, combinationServicesMap);
     }
-
     /**
      * 카테고리 목록 조회
      */
